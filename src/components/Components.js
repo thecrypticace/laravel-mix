@@ -24,6 +24,20 @@ class Components {
     get(name) {
         return this.components[name];
     }
+
+    /**
+     * Determine if the given component name has been registered.
+     */
+    has(name) {
+        return this.components.hasOwnProperty(name);
+    }
+
+    /**
+     * Retrieve all components.
+     */
+    all() {
+        return this.components;
+    }
 }
 
 module.exports = Components;

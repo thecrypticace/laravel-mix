@@ -11,9 +11,13 @@ test('mix can be extended with new functionality as a callback', t => {
 
     mix.extend('foobar', registration);
 
-    mix.foobar();
+    mix.foobar('baz', 'buzz');
 
-    t.true(registration.called);
+    Mix.dispatch('init');
+
+    let config = new WebpackConfig().build();
+
+    t.true(registration.calledWith(config, 'baz', 'buzz'));
 });
 
 test('mix can be extended with new functionality as a class', t => {
@@ -30,9 +34,9 @@ test('mix can be extended with new functionality as a class', t => {
 });
 
 test('dependencies can be requested for download', t => {
-    let Verify = require('../../src/Verify');
+    let Assert = require('../../src/Assert');
 
-    Verify.dependency = sinon.spy();
+    Assert.dependencies = sinon.spy();
 
     mix.extend(
         'foobar',
@@ -49,7 +53,7 @@ test('dependencies can be requested for download', t => {
 
     Mix.dispatch('init');
 
-    t.true(Verify.dependency.calledWith('npm-package'));
+    t.true(Assert.dependencies.calledWith(['npm-package']));
 });
 
 test('webpack entry may be appended to', t => {

@@ -34,25 +34,6 @@ test.cb.serial('it compiles JavaScript and Sass', t => {
     });
 });
 
-test.cb.serial('it extracts vue styles correctly', t => {
-    mix
-        .js(
-            'test/fixtures/fake-app/resources/assets/vue/app-with-vue.js',
-            'js/app.js'
-        )
-        .sass(
-            'test/fixtures/fake-app/resources/assets/sass/app.scss',
-            'css/app.css'
-        )
-        .options({ extractVueStyles: 'css/components.css' });
-
-    compile(t, () => {
-        t.true(File.exists('test/fixtures/fake-app/public/js/app.js'));
-        t.true(File.exists('test/fixtures/fake-app/public/css/app.css'));
-        t.true(File.exists('test/fixtures/fake-app/public/css/components.css'));
-    });
-});
-
 test.serial('basic JS compilation config.', t => {
     mix.js('resources/assets/js/app.js', 'js');
 
@@ -70,7 +51,7 @@ test.serial('basic JS compilation config.', t => {
             path: path.resolve('test/fixtures/fake-app/public'),
             filename: '[name].js',
             chunkFilename: '[name].js',
-            publicPath: ''
+            publicPath: '/'
         },
         webpackConfig.output
     );
@@ -100,7 +81,7 @@ test.serial('basic JS compilation with a different public path', t => {
             path: path.resolve('public-html'),
             filename: '[name].js',
             chunkFilename: '[name].js',
-            publicPath: ''
+            publicPath: '/'
         },
         buildConfig().output
     );
