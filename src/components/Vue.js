@@ -1,4 +1,4 @@
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
+let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 class Vue {
     /**
@@ -16,116 +16,111 @@ class Vue {
      * @param {Object} webpackConfig
      */
     webpackConfig(config) {
-        let { vueLoaderOptions, extractPlugin } = this.vueLoaderOptions();
 
-        config.module.rules.push({
-            test: /\.vue$/,
-            loader: 'vue-loader',
-            exclude: /bower_components/,
-            options: vueLoaderOptions
-        });
+      config.module.rules.push({
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      });
 
-        config.plugins.push(extractPlugin);
+      this.vueLoaders().forEach((rule) => {
+        config.module.rules.push(rule);
+      })
+
+      config.plugins.push(this.extractPlugin());
     }
 
-    /**
-     * vue-loader-specific options.
-     */
-    vueLoaderOptions() {
-        let extractPlugin = this.extractPlugin();
+  /**
+   * vue-loader-specific options.
+   */
+  vueLoaders() {
 
-        if (Config.extractVueStyles) {
-            var sassLoader = extractPlugin.extract({
-                use: 'css-loader!sass-loader?indentedSyntax',
-                fallback: 'vue-style-loader'
-            });
+    let loaders = [];
 
-            var scssLoader = extractPlugin.extract({
-                use: 'css-loader!sass-loader',
-                fallback: 'vue-style-loader'
-            });
+    if (Config.extractVueStyles) {
 
-            if (Config.globalVueStyles) {
-                scssLoader.push({
-                    loader: 'sass-resources-loader',
-                    options: {
-                        resources: Mix.paths.root(Config.globalVueStyles)
-                    }
-                });
+      let sassLoader = {
+        test : /\.sass$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader?indentedSyntax',
+        ],
+      };
 
-                sassLoader.push({
-                    loader: 'sass-resources-loader',
-                    options: {
-                        resources: Mix.paths.root(Config.globalVueStyles)
-                    }
-                });
-            }
-        }
+      let scssLoader = {
+        test : /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
+      };
 
-        let vueLoaderOptions = Object.assign(
-            {
-                loaders: Config.extractVueStyles
-                    ? {
-                          js: {
-                              loader: 'babel-loader',
-                              options: Config.babel()
-                          },
+      if (Config.globalVueStyles) {
 
-                          scss: scssLoader,
+        sassLoader.use.push('sass-resources-loader')
+        scssLoader.options = {
+          resources: Mix.paths.root(Config.globalVueStyles)
+        };
 
-                          sass: sassLoader,
+        sassLoader.use.push('sass-resources-loader')
+        sassLoader.options = {
+          resources: Mix.paths.root(Config.globalVueStyles)
+        };
+      }
 
-                          css: extractPlugin.extract({
-                              use: 'css-loader',
-                              fallback: 'vue-style-loader'
-                          }),
+      loaders.push({
+        test: /\.stylus$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'stylus-loader'
+        ],
+      });
 
-                          stylus: extractPlugin.extract({
-                              use:
-                                  'css-loader!stylus-loader?paths[]=node_modules',
-                              fallback: 'vue-style-loader'
-                          }),
+      loaders.push({
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'stylus-loader?paths[]=node_modules'
+        ],
+      });
 
-                          less: extractPlugin.extract({
-                              use: 'css-loader!less-loader',
-                              fallback: 'vue-style-loader'
-                          })
-                      }
-                    : {
-                          js: {
-                              loader: 'babel-loader',
-                              options: Config.babel()
-                          }
-                      },
-                postcss: Config.postCss
-            },
-            Config.vue
+      loaders.push({
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader'
+        ],
+      });
+    }
+
+    return loaders;
+  }
+
+  extractPlugin() {
+    if (typeof Config.extractVueStyles === 'string') {
+      return new MiniCssExtractPlugin(this.extractFilePath());
+    }
+
+    let preprocessorName = Object.keys(Mix.components.all())
+      .reverse()
+      .find(componentName => {
+        return ['sass', 'less', 'stylus', 'postCss'].includes(
+          componentName
         );
+      });
 
-        return { vueLoaderOptions, extractPlugin };
+    if (!preprocessorName) {
+      return new MiniCssExtractPlugin(this.extractFilePath());
     }
 
-    extractPlugin() {
-        if (typeof Config.extractVueStyles === 'string') {
-            return new ExtractTextPlugin(this.extractFilePath());
-        }
+    return Mix.components.get(preprocessorName).extractPlugins.slice(-1)[0];
+  }
 
-        let preprocessorName = Object.keys(Mix.components.all())
-            .reverse()
-            .find(componentName => {
-                return ['sass', 'less', 'stylus', 'postCss'].includes(
-                    componentName
-                );
-            });
-
-        if (!preprocessorName) {
-            return new ExtractTextPlugin(this.extractFilePath());
-        }
-
-        return Mix.components.get(preprocessorName).extractPlugins.slice(-1)[0];
-    }
-
-    extractFilePath() {
+  extractFilePath() {
         let fileName =
             typeof Config.extractVueStyles === 'string'
                 ? Config.extractVueStyles
