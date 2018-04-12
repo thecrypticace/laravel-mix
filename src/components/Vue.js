@@ -70,20 +70,19 @@ class Vue {
       }
 
       loaders.push({
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+        ],
+      });
+
+      loaders.push({
         test: /\.stylus$/,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
           'stylus-loader'
-        ],
-      });
-
-      loaders.push({
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'stylus-loader?paths[]=node_modules'
         ],
       });
 
