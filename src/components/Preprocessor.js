@@ -23,16 +23,9 @@ class Preprocessor {
 
         this.details.forEach(preprocessor => {
             if (preprocessor.type === 'fastsass') return;
-
-            let outputPath = preprocessor.output.filePath
-                .replace(Config.publicPath + path.sep, path.sep)
-                .replace(/\\/g, '/');
-
-            console.info(outputPath)
-
+            // https://github.com/webpack-contrib/mini-css-extract-plugin/issues/37
             tap(new MiniCssExtractPlugin({
-              filename: outputPath,
-              path: Config.publicPath
+              filename: `/css/${preprocessor.output.segments.file}`,
             }), extractPlugin => {
                 let loaders = [
                     {

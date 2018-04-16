@@ -152,11 +152,13 @@ class Vue {
         }
       ]
     });
+
+    return loaders;
   }
 
   extractPlugin() {
     if (typeof Config.extractVueStyles === 'string') {
-      return new MiniCssExtractPlugin(this.extractFilePath());
+      return new MiniCssExtractPlugin(this.extractFileName());
     }
 
     let preprocessorName = Object.keys(Mix.components.all())
@@ -168,19 +170,19 @@ class Vue {
       });
 
     if (!preprocessorName) {
-      return new MiniCssExtractPlugin(this.extractFilePath());
+      return new MiniCssExtractPlugin(this.extractFileName());
     }
 
     return Mix.components.get(preprocessorName).extractPlugins.slice(-1)[0];
   }
 
-  extractFilePath() {
+  extractFileName() {
         let fileName =
             typeof Config.extractVueStyles === 'string'
                 ? Config.extractVueStyles
                 : 'vue-styles.css';
 
-        return fileName.replace(Config.publicPath, '').replace(/^\//, '');
+        return `/css/${fileName.replace(Config.publicPath, '').replace(/^\//, '')}`;
     }
 }
 
