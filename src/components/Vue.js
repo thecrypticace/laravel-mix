@@ -80,7 +80,7 @@ class Vue {
 
       if (Config.globalVueStyles) {
 
-        sassLoader.use.push('sass-resources-loader')
+        scssLoader.use.push('sass-resources-loader')
         scssLoader.options = {
           resources: Mix.paths.root(Config.globalVueStyles)
         };
@@ -90,6 +90,9 @@ class Vue {
           resources: Mix.paths.root(Config.globalVueStyles)
         };
       }
+
+      loaders.push(scssLoader);
+      loaders.push(sassLoader);
 
       loaders.push({
         test: /\.css$/,
