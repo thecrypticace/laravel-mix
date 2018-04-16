@@ -28,8 +28,11 @@ class Preprocessor {
                 .replace(Config.publicPath + path.sep, path.sep)
                 .replace(/\\/g, '/');
 
+            console.info(outputPath)
+
             tap(new MiniCssExtractPlugin({
-              filename: outputPath
+              filename: outputPath,
+              path: Config.publicPath
             }), extractPlugin => {
                 let loaders = [
                     {
