@@ -1,5 +1,5 @@
 let MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
+let VueLoaderPlugin = require('vue-loader')
 class Vue {
     /**
      * Required dependencies for the component.
@@ -26,6 +26,7 @@ class Vue {
         webpackConfig.module.rules.push(rule);
       })
 
+      webpackConfig.plugins.push(new VueLoaderPlugin());
       webpackConfig.plugins.push(this.extractPlugin());
     }
 
