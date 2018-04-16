@@ -1,5 +1,5 @@
 let MiniCssExtractPlugin = require('mini-css-extract-plugin');
-let VueLoaderPlugin = require('vue-loader')
+let { VueLoaderPlugin } = require('vue-loader')
 class Vue {
     /**
      * Required dependencies for the component.
