@@ -22,9 +22,11 @@ class Vue {
         loader: 'vue-loader',
       });
 
-      this.vueLoaders().forEach((rule) => {
-        webpackConfig.module.rules.push(rule);
-      })
+      if (Config.extractVueStyles) {
+        this.vueLoaders().forEach((rule) => {
+          webpackConfig.module.rules.push(rule);
+        })
+      }
 
       webpackConfig.plugins.push(new VueLoaderPlugin());
       webpackConfig.plugins.push(this.extractPlugin());
@@ -37,124 +39,119 @@ class Vue {
 
     let loaders = [];
 
-    if (Config.extractVueStyles) {
+    let sassLoader = {
+      test : /\.sass$/,
+      oneOf: [
+        {
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'sass-loader?indentedSyntax',
+          ],
+        },
+        {
+          use : [
+            'vue-style-loader',
+            'css-loader',
+            'sass-loader?indentedSyntax',
+          ]
+        }
+      ]
+    };
 
-      let sassLoader = {
-        test : /\.sass$/,
-        oneOf: [
-          {
-            use: [
-              MiniCssExtractPlugin.loader,
-              'css-loader',
-              'sass-loader?indentedSyntax',
-            ],
-          },
-          {
-            use : [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader?indentedSyntax',
-            ]
-          }
-        ]
+    let scssLoader = {
+      test: /\.scss$/,
+      oneOf: [
+        {
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'sass-loader',
+          ],
+        },
+        {
+          use : [
+            'vue-style-loader',
+            'css-loader',
+            'sass-loader',
+          ]
+        }
+      ]
+    };
+
+    if (Config.globalVueStyles) {
+
+      scssLoader.use.push('sass-resources-loader')
+      scssLoader.options = {
+        resources: Mix.paths.root(Config.globalVueStyles)
       };
 
-      let scssLoader = {
-        test: /\.scss$/,
-        oneOf: [
-          {
-            use: [
-              MiniCssExtractPlugin.loader,
-              'css-loader',
-              'sass-loader',
-            ],
-          },
-          {
-            use : [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader',
-            ]
-          }
-        ]
+      sassLoader.use.push('sass-resources-loader')
+      sassLoader.options = {
+        resources: Mix.paths.root(Config.globalVueStyles)
       };
-
-      if (Config.globalVueStyles) {
-
-        scssLoader.use.push('sass-resources-loader')
-        scssLoader.options = {
-          resources: Mix.paths.root(Config.globalVueStyles)
-        };
-
-        sassLoader.use.push('sass-resources-loader')
-        sassLoader.options = {
-          resources: Mix.paths.root(Config.globalVueStyles)
-        };
-      }
-
-      loaders.push(scssLoader);
-      loaders.push(sassLoader);
-
-      loaders.push({
-        test: /\.css$/,
-        oneOf: [
-          {
-            use: [
-              MiniCssExtractPlugin.loader,
-              'css-loader',
-            ],
-          },
-          {
-            use : [
-              'vue-style-loader',
-              'css-loader',
-            ]
-          }
-        ]
-      });
-
-      loaders.push({
-        test: /\.stylus$/,
-        oneOf: [
-          {
-            use: [
-              MiniCssExtractPlugin.loader,
-              'css-loader',
-              'stylus-loader'
-            ],
-          },
-          {
-            use : [
-              'vue-style-loader',
-              'css-loader',
-              'stylus-loader'
-            ]
-          }
-        ]
-      });
-
-      loaders.push({
-        test: /\.less$/,
-        oneOf: [
-          {
-            use: [
-              MiniCssExtractPlugin.loader,
-              'css-loader',
-              'less-loader'
-            ],
-          },
-          {
-            use : [
-              'vue-style-loader',
-              'css-loader',
-              'less-loader'
-            ]
-          }
-        ]
-      });
     }
 
-    return loaders;
+    loaders.push(scssLoader);
+    loaders.push(sassLoader);
+
+    loaders.push({
+      test: /\.css$/,
+      oneOf: [
+        {
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+          ],
+        },
+        {
+          use : [
+            'vue-style-loader',
+            'css-loader',
+          ]
+        }
+      ]
+    });
+
+    loaders.push({
+      test: /\.stylus$/,
+      oneOf: [
+        {
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'stylus-loader'
+          ],
+        },
+        {
+          use : [
+            'vue-style-loader',
+            'css-loader',
+            'stylus-loader'
+          ]
+        }
+      ]
+    });
+
+    loaders.push({
+      test: /\.less$/,
+      oneOf: [
+        {
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'less-loader'
+          ],
+        },
+        {
+          use : [
+            'vue-style-loader',
+            'css-loader',
+            'less-loader'
+          ]
+        }
+      ]
+    });
   }
 
   extractPlugin() {
