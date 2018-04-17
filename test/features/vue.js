@@ -12,7 +12,7 @@ test.cb.serial(
                 'test/fixtures/fake-app/resources/assets/sass/app.scss',
                 'css/app.css'
             )
-            .options({ extractVueStyles: true });
+            .options({ extractVueStyles: false });
 
         compile(t, () => {
             t.true(File.exists('test/fixtures/fake-app/public/js/app.js'));

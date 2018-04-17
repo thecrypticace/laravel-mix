@@ -23,13 +23,14 @@ class Vue {
       });
 
       if (Config.extractVueStyles) {
-        this.vueLoaders().forEach((rule) => {
-          webpackConfig.module.rules.push(rule);
-        })
+        // TODO - we need to modify the existing rules instead
+        // this.vueLoaders().forEach((rule) => {
+        //   webpackConfig.module.rules.push(rule);
+        // })
       }
 
       webpackConfig.plugins.push(new VueLoaderPlugin());
-      webpackConfig.plugins.push(this.extractPlugin());
+      // webpackConfig.plugins.push(this.extractPlugin()); // TODO - not sure how we can deal with this separately from the other configuration
     }
 
   /**

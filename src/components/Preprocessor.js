@@ -25,12 +25,13 @@ class Preprocessor {
             if (preprocessor.type === 'fastsass') return;
 
             tap(new MiniCssExtractPlugin({
-              filename: `${preprocessor.output.segments.path}`,
+              filename: `${preprocessor.output.segments.path}`, // TODO - issue with mini extract plugin : https://github.com/webpack-contrib/mini-css-extract-plugin/issues/37#issuecomment-382072952
             }), extractPlugin => {
                 let loaders = [
                     {
-                      loader : MiniCssExtractPlugin.loader,
+                      loader : 'vue-style-loader', // TODO - this needs to be dynamically put here
                     },
+                    MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
