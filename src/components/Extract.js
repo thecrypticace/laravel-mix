@@ -1,3 +1,4 @@
+let webpack = require('webpack');
 let webpackMerge = require('webpack-merge')
 
 class Extract {
