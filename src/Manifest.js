@@ -1,6 +1,3 @@
-let objectValues = require('lodash').values;
-let without = require('lodash').without;
-
 let path = require('path');
 
 class Manifest {
@@ -107,14 +104,12 @@ class Manifest {
         let assets = stats.assets
 
         assets = assets.filter(asset => {
-            return ! (
+          return ! (
                 asset.name === "mix.js" && asset.chunkNames.includes("mix")
             )
         })
 
-        assets = assets.map(asset => asset.name)
-
-        return assets
+        return assets.map(asset => asset.name)
     }
 
     /**

@@ -23,9 +23,9 @@ class Preprocessor {
 
         this.details.forEach(preprocessor => {
             if (preprocessor.type === 'fastsass') return;
-            // https://github.com/webpack-contrib/mini-css-extract-plugin/issues/37
+
             tap(new MiniCssExtractPlugin({
-              filename: `/css/${preprocessor.output.segments.file}`,
+              filename: `${preprocessor.output.segments.path}`,
             }), extractPlugin => {
                 let loaders = [
                     {
