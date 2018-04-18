@@ -1,9 +1,8 @@
-let webpack = require('webpack');
-
 let webpackDefaultConfig = require('./webpack-default');
 let Entry = require('./Entry');
 let webpackRules = require('./webpack-rules');
 let webpackPlugins = require('./webpack-plugins');
+const util = require('util')
 
 process.noDeprecation = true;
 
@@ -27,6 +26,8 @@ class WebpackConfig {
             .mergeCustomConfig();
 
         Mix.dispatch('configReady', this.webpackConfig);
+
+        console.log(util.inspect(this.webpackConfig, false, null))
 
         return this.webpackConfig;
     }

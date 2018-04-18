@@ -1,5 +1,6 @@
-let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 let { VueLoaderPlugin } = require('vue-loader')
+let MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 class Vue {
     /**
      * Required dependencies for the component.
@@ -22,128 +23,47 @@ class Vue {
         loader: 'vue-loader',
       });
 
-      if (Config.extractVueStyles) {
-        // TODO - we need to modify the existing rules instead
-        // this.vueLoaders().forEach((rule) => {
-        //   webpackConfig.module.rules.push(rule);
-        // })
-      }
+      this.vueLoaders(webpackConfig)
 
       webpackConfig.plugins.push(new VueLoaderPlugin());
-      // webpackConfig.plugins.push(this.extractPlugin()); // TODO - not sure how we can deal with this separately from the other configuration
+
+      // TODO - get extraction to work
+      webpackConfig.plugins.push(this.extractPlugin());
     }
 
-  /**
-   * vue-loader-specific options.
-   */
-  vueLoaders() {
+    /**
+     * vue-loader-specific options.
+     */
+    vueLoaders(webpackConfig) {
 
-    let loaders = [];
+      // TODO - get extraction to work
+      // if (Config.extractVueStyles) {
 
-    let sassLoader = {
-      test : /\.sass$/,
-      oneOf: [
-        {
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'sass-loader?indentedSyntax',
-          ],
-        },
-        {
-          use : [
-            'vue-style-loader',
-            'css-loader',
-            'sass-loader?indentedSyntax',
-          ]
-        }
-      ]
-    };
+      let loaders = [];
 
-    let scssLoader = {
-      test: /\.scss$/,
-      oneOf: [
-        {
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'sass-loader',
-          ],
-        },
-        {
-          use : [
-            'vue-style-loader',
-            'css-loader',
-            'sass-loader',
-          ]
-        }
-      ]
-    };
-
-    if (Config.globalVueStyles) {
-
-      scssLoader.use.push('sass-resources-loader')
-      scssLoader.options = {
-        resources: Mix.paths.root(Config.globalVueStyles)
-      };
-
-      sassLoader.use.push('sass-resources-loader')
-      sassLoader.options = {
-        resources: Mix.paths.root(Config.globalVueStyles)
-      };
-    }
-
-    loaders.push(scssLoader);
-    loaders.push(sassLoader);
-
-    loaders.push({
-      test: /\.css$/,
-      oneOf: [
-        {
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-          ],
-        },
+      this._updateRuleLoaders(webpackConfig, 'css', [
+        // {
+        //   use: [
+        //     MiniCssExtractPlugin.loader,
+        //     'css-loader',
+        //   ],
+        // },
         {
           use : [
             'vue-style-loader',
             'css-loader',
           ]
-        }
-      ]
-    });
-
-    loaders.push({
-      test: /\.stylus$/,
-      oneOf: [
-        {
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'stylus-loader'
-          ],
         },
-        {
-          use : [
-            'vue-style-loader',
-            'css-loader',
-            'stylus-loader'
-          ]
-        }
-      ]
-    });
+      ])
 
-    loaders.push({
-      test: /\.less$/,
-      oneOf: [
-        {
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'less-loader'
-          ],
-        },
+      this._updateRuleLoaders(webpackConfig, 'less', [
+        // {
+        //   use: [
+        //     MiniCssExtractPlugin.loader,
+        //     'css-loader',
+        //     'less-loader'
+        //   ],
+        // },
         {
           use : [
             'vue-style-loader',
@@ -151,33 +71,92 @@ class Vue {
             'less-loader'
           ]
         }
-      ]
-    });
+      ]);
 
-    return loaders;
-  }
+      this._updateRuleLoaders(webpackConfig, 's[ac]ss', [
+       // {
+       //   use: [
+       //     MiniCssExtractPlugin.loader,
+       //     'css-loader',
+       //     'sass-loader?indentedSyntax',
+       //   ],
+       // },
+       {
+         use : [
+           'vue-style-loader',
+           'css-loader',
+           'sass-loader?indentedSyntax',
+         ]
+       }
+      ])
 
-  extractPlugin() {
-    if (typeof Config.extractVueStyles === 'string') {
-      return new MiniCssExtractPlugin(this.extractFileName());
-    }
-
-    let preprocessorName = Object.keys(Mix.components.all())
-      .reverse()
-      .find(componentName => {
-        return ['sass', 'less', 'stylus', 'postCss'].includes(
-          componentName
-        );
+      webpackConfig.module.rules.push({
+        test: /\.stylus$/,
+        oneOf: [
+          // {
+          //   use: [
+          //     MiniCssExtractPlugin.loader,
+          //     'css-loader',
+          //     'stylus-loader'
+          //   ],
+          // },
+          {
+            use : [
+              'vue-style-loader',
+              'css-loader',
+              'stylus-loader'
+            ]
+          }
+        ]
       });
 
-    if (!preprocessorName) {
-      return new MiniCssExtractPlugin(this.extractFileName());
+      // TODO - this needs to be revisited
+      // if (Config.globalVueStyles) {
+      //   scssLoader.use.push('sass-resources-loader')
+      //   scssLoader.options = {
+      //     resources: Mix.paths.root(Config.globalVueStyles)
+      //   };
+      //
+      //   sassLoader.use.push('sass-resources-loader')
+      //   sassLoader.options = {
+      //     resources: Mix.paths.root(Config.globalVueStyles)
+      //   };
+      // }
+
+      return loaders;
     }
 
-    return Mix.components.get(preprocessorName).extractPlugins.slice(-1)[0];
-  }
+    /**
+     * vue-loader-specific options.
+     */
+    _updateRuleLoaders(webpackConfig, loader, loaders) {
+      let rule = webpackConfig.module.rules.find(rule => rule.test.toString() === `/\\.${loader}$/`)
+      rule.oneOf = loaders;
+      rule.oneOf.push({ use : rule.loaders})
+      delete rule.loaders;
+    }
 
-  extractFileName() {
+    extractPlugin() {
+      if (typeof Config.extractVueStyles === 'string') {
+        return new MiniCssExtractPlugin(this.extractFileName());
+      }
+
+      let preprocessorName = Object.keys(Mix.components.all())
+        .reverse()
+        .find(componentName => {
+          return ['sass', 'less', 'stylus', 'postCss'].includes(
+            componentName
+          );
+        });
+
+      if (!preprocessorName) {
+        return new MiniCssExtractPlugin(this.extractFileName());
+      }
+
+      return Mix.components.get(preprocessorName).extractPlugins.slice(-1)[0];
+    }
+
+    extractFileName() {
         let fileName =
             typeof Config.extractVueStyles === 'string'
                 ? Config.extractVueStyles

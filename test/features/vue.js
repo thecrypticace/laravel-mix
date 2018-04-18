@@ -1,6 +1,6 @@
 import mix from './helpers/setup';
 
-test.cb.serial(
+test.cb.only.serial(
     'it prepends vue styles to your sass/less/stylus compiled file',
     t => {
         mix
