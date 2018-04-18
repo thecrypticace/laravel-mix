@@ -29,9 +29,6 @@ class Preprocessor {
               chunkFilename: `${preprocessor.output.segments.path}`
             }), extractPlugin => {
                 let loaders = [
-                    {
-                      loader : 'vue-style-loader', // TODO - this needs to be dynamically put here
-                    },
                     MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
