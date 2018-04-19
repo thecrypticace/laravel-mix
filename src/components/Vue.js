@@ -28,12 +28,8 @@ class Vue {
       webpackConfig.plugins.push(new VueLoaderPlugin());
 
       if (Config.extractVueStyles) {
-        console.info('whaaaa')
         webpackConfig.plugins.push(
-          new MiniCssExtractPlugin({
-            filename: this.extractFileName(),
-            chunkFilename: this.extractFileName(),
-          })
+          this.extractPlugin()
         );
       }
     }
@@ -101,6 +97,32 @@ class Vue {
       });
 
       return loaders;
+    }
+
+    extractPlugin() {
+      if (typeof Config.extractVueStyles === 'string') {
+        return new MiniCssExtractPlugin({
+          filename: this.extractFileName(),
+          chunkFilename: this.extractFileName(),
+        });
+      }
+
+      let preprocessorName = Object.keys(Mix.components.all())
+        .reverse()
+        .find(componentName => {
+        return ['sass', 'less', 'stylus', 'postCss'].includes(
+          componentName
+        );
+      });
+
+      if (!preprocessorName) {
+        return new MiniCssExtractPlugin({
+          filename: this.extractFileName(),
+          chunkFilename: this.extractFileName(),
+        })
+      }
+
+      return  Mix.components.get(preprocessorName).extractPlugins.slice(1)[0];
     }
 
     /**
