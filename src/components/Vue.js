@@ -18,7 +18,7 @@ class Vue {
      */
     webpackConfig(webpackConfig) {
 
-      webpackConfig.module.rules.unshift({
+      webpackConfig.module.rules.push({
         test: /\.vue$/,
         loader: 'vue-loader',
       });
