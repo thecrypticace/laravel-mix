@@ -18,7 +18,7 @@ class Vue {
      */
     webpackConfig(webpackConfig) {
 
-      webpackConfig.module.rules.push({
+      webpackConfig.module.rules.unshift({
         test: /\.vue$/,
         loader: 'vue-loader',
       });
@@ -89,6 +89,7 @@ class Vue {
          ]
        }
       ])
+
 
       webpackConfig.module.rules.push({
         test: /\.stylus$/,
