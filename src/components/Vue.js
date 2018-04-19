@@ -28,6 +28,7 @@ class Vue {
       webpackConfig.plugins.push(new VueLoaderPlugin());
 
       if (Config.extractVueStyles) {
+        // TODO - https://github.com/webpack-contrib/mini-css-extract-plugin/issues/45 , until this gets resolved, we cannot do 2 mini extract plugins
         webpackConfig.plugins.push(
           this.extractPlugin()
         );
@@ -60,28 +61,25 @@ class Vue {
         }
       ]);
 
+      let sassLoader = {
+        loader : 'sass-loader',
+      };
+
+      if (Config.globalVueStyles) {
+        sassLoader.options = {
+          resources: Mix.paths.root(Config.globalVueStyles)
+        };
+      }
+
       this._updateRuleLoaders(webpackConfig, 's[ac]ss', [
        {
          use : [
            Mix.components.get('sass') || Config.extractVueStyles ? MiniCssExtractPlugin.loader : 'vue-style-loader',
            'css-loader',
-           'sass-loader',
+           sassLoader
          ]
        }
       ]);
-
-      // TODO - Global Styles for Sass only?
-      // if (Config.globalVueStyles) {
-      //   scssLoader.use.push('sass-resources-loader')
-      //   scssLoader.options = {
-      //     resources: Mix.paths.root(Config.globalVueStyles)
-      //   };
-      //
-      //   sassLoader.use.push('sass-resources-loader')
-      //   sassLoader.options = {
-      //     resources: Mix.paths.root(Config.globalVueStyles)
-      //   };
-      // }
 
       webpackConfig.module.rules.push({
         test: /\.stylus$/,

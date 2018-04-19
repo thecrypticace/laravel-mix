@@ -27,8 +27,6 @@ class WebpackConfig {
 
         Mix.dispatch('configReady', this.webpackConfig);
 
-        console.log(util.inspect(this.webpackConfig, false, null))
-
         return this.webpackConfig;
     }
 
