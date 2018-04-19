@@ -139,7 +139,7 @@ class Vue {
                 ? Config.extractVueStyles
                 : '/css/vue-styles.css';
 
-        return `${fileName.replace(Config.publicPath, '').replace(/^\//, '')}`;
+        return fileName.replace(Config.publicPath, '').replace(/^\//, '');
     }
 }
 
