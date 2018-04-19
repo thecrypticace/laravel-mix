@@ -101,15 +101,15 @@ class Manifest {
      * @param {Object} stats
      */
     flattenAssets(stats) {
-        let assets = stats.assets
+        let assets = stats.assets;
 
         assets = assets.filter(asset => {
-          return ! (
-                asset.name === "mix.js" && asset.chunkNames.includes("mix")
-            )
-        })
+            return !(
+                asset.name === 'mix.js' && asset.chunkNames.includes('mix')
+            );
+        });
 
-        return assets.map(asset => asset.name)
+        return assets.map(asset => asset.name);
     }
 
     /**

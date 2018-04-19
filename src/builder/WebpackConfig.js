@@ -35,7 +35,7 @@ class WebpackConfig {
     buildEntry() {
         let entry = new Entry();
 
-        if (! Mix.bundlingJavaScript) {
+        if (!Mix.bundlingJavaScript) {
             entry.addDefault();
         }
 
@@ -43,8 +43,8 @@ class WebpackConfig {
 
         this.webpackConfig.entry = entry.get();
         this.webpackConfig.mode = Mix.inProduction()
-            ? "production"
-            : "development";
+            ? 'production'
+            : 'development';
 
         return this;
     }
