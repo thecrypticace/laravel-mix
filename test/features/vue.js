@@ -1,6 +1,6 @@
 import mix from './helpers/setup';
 
-test.cb.only.serial(
+test.cb.serial(
     'it prepends vue styles to your sass/less/stylus compiled file',
     t => {
         mix
@@ -22,9 +22,11 @@ test.cb.only.serial(
 .hello {
   color: blue;
 }
+
 body {
   color: red;
 }
+
 
 `;
 
@@ -48,17 +50,18 @@ test.cb.serial(
 
         compile(t, () => {
             t.true(File.exists('test/fixtures/fake-app/public/js/app.js'));
-            t.true(File.exists('test/fixtures/fake-app/public/vue-styles.css'));
+            t.true(File.exists('test/fixtures/fake-app/public/css/vue-styles.css'));
 
             let expected = `
 .hello {
   color: blue;
 }
+
 `;
 
             t.is(
                 expected,
-                File.find('test/fixtures/fake-app/public/vue-styles.css').read()
+                File.find('test/fixtures/fake-app/public/css/vue-styles.css').read()
             );
         });
     }
@@ -96,6 +99,7 @@ test.cb.serial('it extracts vue styles to a dedicated file', t => {
 .hello {
   color: blue;
 }
+
 `;
 
         t.is(

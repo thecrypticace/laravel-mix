@@ -27,8 +27,15 @@ class Vue {
 
       webpackConfig.plugins.push(new VueLoaderPlugin());
 
-      // TODO - get extraction to work
-      webpackConfig.plugins.push(this.extractPlugin());
+      if (Config.extractVueStyles) {
+        console.info('whaaaa')
+        webpackConfig.plugins.push(
+          new MiniCssExtractPlugin({
+            filename: this.extractFileName(),
+            chunkFilename: this.extractFileName(),
+          })
+        );
+      }
     }
 
     /**
@@ -36,37 +43,21 @@ class Vue {
      */
     vueLoaders(webpackConfig) {
 
-      // TODO - get extraction to work
-      // if (Config.extractVueStyles) {
-
       let loaders = [];
 
       this._updateRuleLoaders(webpackConfig, 'css', [
-        // {
-        //   use: [
-        //     MiniCssExtractPlugin.loader,
-        //     'css-loader',
-        //   ],
-        // },
         {
           use : [
-            'vue-style-loader',
+            MiniCssExtractPlugin.loader,
             'css-loader',
           ]
         },
       ])
 
       this._updateRuleLoaders(webpackConfig, 'less', [
-        // {
-        //   use: [
-        //     MiniCssExtractPlugin.loader,
-        //     'css-loader',
-        //     'less-loader'
-        //   ],
-        // },
         {
           use : [
-            'vue-style-loader',
+            Mix.components.get('less') || Config.extractVueStyles ? MiniCssExtractPlugin.loader : 'vue-style-loader',
             'css-loader',
             'less-loader'
           ]
@@ -74,44 +65,16 @@ class Vue {
       ]);
 
       this._updateRuleLoaders(webpackConfig, 's[ac]ss', [
-       // {
-       //   use: [
-       //     MiniCssExtractPlugin.loader,
-       //     'css-loader',
-       //     'sass-loader?indentedSyntax',
-       //   ],
-       // },
        {
          use : [
-           'vue-style-loader',
+           Mix.components.get('sass') || Config.extractVueStyles ? MiniCssExtractPlugin.loader : 'vue-style-loader',
            'css-loader',
            'sass-loader',
          ]
        }
-      ])
+      ]);
 
-
-      webpackConfig.module.rules.push({
-        test: /\.stylus$/,
-        oneOf: [
-          // {
-          //   use: [
-          //     MiniCssExtractPlugin.loader,
-          //     'css-loader',
-          //     'stylus-loader'
-          //   ],
-          // },
-          {
-            use : [
-              'vue-style-loader',
-              'css-loader',
-              'stylus-loader'
-            ]
-          }
-        ]
-      });
-
-      // TODO - this needs to be revisited
+      // TODO - Global Styles for Sass only?
       // if (Config.globalVueStyles) {
       //   scssLoader.use.push('sass-resources-loader')
       //   scssLoader.options = {
@@ -123,6 +86,19 @@ class Vue {
       //     resources: Mix.paths.root(Config.globalVueStyles)
       //   };
       // }
+
+      webpackConfig.module.rules.push({
+        test: /\.stylus$/,
+        oneOf: [
+          {
+            use : [
+              MiniCssExtractPlugin.loader,
+              'css-loader',
+              'stylus-loader'
+            ]
+          }
+        ]
+      });
 
       return loaders;
     }
@@ -137,33 +113,13 @@ class Vue {
       delete rule.loaders;
     }
 
-    extractPlugin() {
-      if (typeof Config.extractVueStyles === 'string') {
-        return new MiniCssExtractPlugin(this.extractFileName());
-      }
-
-      let preprocessorName = Object.keys(Mix.components.all())
-        .reverse()
-        .find(componentName => {
-          return ['sass', 'less', 'stylus', 'postCss'].includes(
-            componentName
-          );
-        });
-
-      if (!preprocessorName) {
-        return new MiniCssExtractPlugin(this.extractFileName());
-      }
-
-      return Mix.components.get(preprocessorName).extractPlugins.slice(-1)[0];
-    }
-
     extractFileName() {
         let fileName =
             typeof Config.extractVueStyles === 'string'
                 ? Config.extractVueStyles
-                : 'vue-styles.css';
+                : '/css/vue-styles.css';
 
-        return `/css/${fileName.replace(Config.publicPath, '').replace(/^\//, '')}`;
+        return `${fileName.replace(Config.publicPath, '').replace(/^\//, '')}`;
     }
 }
 
