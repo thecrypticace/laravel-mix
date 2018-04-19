@@ -29,9 +29,10 @@ class Vue {
 
       if (Config.extractVueStyles) {
         // TODO - https://github.com/webpack-contrib/mini-css-extract-plugin/issues/45 , until this gets resolved, we cannot do 2 mini extract plugins
-        webpackConfig.plugins.push(
-          this.extractPlugin()
-        );
+        let extractPlugin = this.extractPlugin();
+        if(extractPlugin) {
+          webpackConfig.plugins.push(extractPlugin);
+        }
       }
     }
 
@@ -119,8 +120,7 @@ class Vue {
           chunkFilename: this.extractFileName(),
         })
       }
-
-      return  Mix.components.get(preprocessorName).extractPlugins.slice(1)[0];
+      return false;
     }
 
     /**
