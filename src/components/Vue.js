@@ -45,7 +45,7 @@ class Vue {
       this._updateRuleLoaders(webpackConfig, 'css', [
         {
           use : [
-            MiniCssExtractPlugin.loader,
+            Mix.components.get('css') || Config.extractVueStyles ? MiniCssExtractPlugin.loader : 'vue-style-loader',
             'css-loader',
           ]
         },
@@ -86,7 +86,7 @@ class Vue {
         oneOf: [
           {
             use : [
-              MiniCssExtractPlugin.loader,
+              Mix.components.get('stylus') || Config.extractVueStyles ? MiniCssExtractPlugin.loader : 'vue-style-loader',
               'css-loader',
               'stylus-loader'
             ]
