@@ -89,5 +89,9 @@
   },
   "engines": {
     "node": ">=6.0.0"
+  },
+  "prettier": {
+    "tabWidth": 4,
+    "singleQuote": true
   }
 }
