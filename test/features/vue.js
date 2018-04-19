@@ -1,6 +1,6 @@
 import mix from './helpers/setup';
 
-test.cb.serial(
+test.cb.only.serial(
     'it prepends vue styles to your sass/less/stylus compiled file',
     t => {
         mix
@@ -38,7 +38,7 @@ body {
     }
 );
 
-test.cb.serial(
+test.cb.only.serial(
     'it appends vue styles to a vue-styles.css file, if no preprocessor is used',
     t => {
         mix
@@ -67,7 +67,7 @@ test.cb.serial(
     }
 );
 
-test.cb.serial('it extracts vue styles to a dedicated file', t => {
+test.cb.only.serial('it extracts vue styles to a dedicated file', t => {
     mix
         .js(
             'test/fixtures/fake-app/resources/assets/vue/app-with-vue.js',
