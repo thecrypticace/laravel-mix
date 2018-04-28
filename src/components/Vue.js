@@ -1,7 +1,9 @@
+let webpackMerge = require('webpack-merge');
 let { VueLoaderPlugin } = require('vue-loader');
 let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 class Vue {
+
     /**
      * Required dependencies for the component.
      */
@@ -27,7 +29,10 @@ class Vue {
         webpackConfig.plugins.push(new VueLoaderPlugin());
 
         if (Config.extractVueStyles) {
-            // TODO - https://github.com/webpack-contrib/mini-css-extract-plugin/issues/45 , until this gets resolved, we cannot do 2 mini extract plugins
+
+            const newConfig = webpackMerge.smart(webpackConfig, this.config());
+            webpackConfig.optimization = newConfig.optimization;
+
             let extractPlugin = this.extractPlugin();
             if (extractPlugin) {
                 webpackConfig.plugins.push(extractPlugin);
@@ -107,8 +112,8 @@ class Vue {
     extractPlugin() {
         if (typeof Config.extractVueStyles === 'string') {
             return new MiniCssExtractPlugin({
-                filename: this.extractFileName(),
-                chunkFilename: this.extractFileName()
+                filename: this.extractFilePath(),
+                chunkFilename: this.extractFilePath()
             });
         }
 
@@ -122,8 +127,8 @@ class Vue {
 
         if (!preprocessorName) {
             return new MiniCssExtractPlugin({
-                filename: this.extractFileName(),
-                chunkFilename: this.extractFileName()
+                filename: this.extractFilePath(),
+                chunkFilename: this.extractFilePath()
             });
         }
         return false;
@@ -141,13 +146,32 @@ class Vue {
         delete rule.loaders;
     }
 
-    extractFileName() {
+    extractFilePath() {
         let fileName =
             typeof Config.extractVueStyles === 'string'
                 ? Config.extractVueStyles
                 : '/css/vue-styles.css';
 
         return fileName.replace(Config.publicPath, '').replace(/^\//, '');
+    }
+
+    config() {
+        return {
+            optimization: {
+                splitChunks: {
+                    cacheGroups: {
+                        vue : {
+                            test: m => {
+                                return /\.vue\?vue&type=style/.test(m._identifier);
+                            },
+                            name: this.extractFilePath(),
+                            chunks: 'all',
+                            enforce: true
+                        }
+                    }
+                }
+            }
+        };
     }
 }
 
