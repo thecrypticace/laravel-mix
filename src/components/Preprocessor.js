@@ -41,24 +41,21 @@ class Preprocessor {
      * @param {Object} preprocessor
      */
     config(preprocessor) {
-        let preprocessorExtractionConfig = {
+        console.info(`SASS PATH : ${preprocessor.output.segments.path.replace('.css', '')}`)
+        return {
             optimization: {
                 splitChunks: {
                     cacheGroups: {
-
+                        [preprocessor.type] : {
+                            chunks: "all",
+                            enforce: true,
+                            test: preprocessor.src.path(),
+                            name: preprocessor.output.segments.path.replace('.css', ''),
+                        }
                     },
                 }
             }
         };
-
-        console.info(`SASS PATH : ${preprocessor.output.segments.path.replace('.css', '')}`)
-
-        preprocessorExtractionConfig.optimization.splitChunks.cacheGroups[preprocessor.type] =  {
-            chunks: "all",
-            enforce: true,
-            test: preprocessor.src.path(),
-            name: preprocessor.output.segments.path.replace('.css', ''),
-        }
     }
 
     /**
