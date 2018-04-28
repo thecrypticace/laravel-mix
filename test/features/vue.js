@@ -88,6 +88,7 @@ test.cb.serial('it extracts vue styles to a dedicated file', t => {
   color: red;
 }
 
+
 `;
 
         t.is(
