@@ -3,6 +3,11 @@ let webpackMerge = require('webpack-merge');
 let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 class Preprocessor {
+
+    constructor() {
+        this.requiresCssExtraction = true;
+    }
+
     /**
      * Assets to append to the webpack entry.
      *
@@ -29,10 +34,6 @@ class Preprocessor {
                 webpackConfig.optimization = newConfig.optimization;
             }
         });
-        webpackConfig.plugins.push(new MiniCssExtractPlugin({
-            filename: "[name].css",
-            chunkFilename: "[name].css"
-        }));
     }
 
     /**

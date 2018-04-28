@@ -1,6 +1,7 @@
 let mix = require('../index');
 let Assert = require('../Assert');
 let webpackMerge = require('webpack-merge');
+let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 let components = [
     'JavaScript',
@@ -69,6 +70,10 @@ class ComponentFactory {
             Mix.listen('loading-plugins', plugins => {
                 component.webpackPlugins &&
                     this.applyPlugins(plugins, component);
+
+                if (component.requiresCssExtraction) {
+                    this.applyCssExtractionPlugins(plugins, component)
+                }
             });
 
             Mix.listen('configReady', config => {
@@ -167,6 +172,19 @@ class ComponentFactory {
         tap(component.webpackPlugins(), newPlugins => {
             newPlugins && plugins.push(...[].concat(newPlugins));
         });
+    }
+
+    applyCssExtractionPlugins(plugins) {
+        if (plugins.some(plugin => plugin instanceof MiniCssExtractPlugin)) {
+            return;
+        }
+
+        plugins.push(
+            new MiniCssExtractPlugin({
+                filename: "[name].css",
+                chunkFilename: "[name].css"
+            })
+        );
     }
 }
 

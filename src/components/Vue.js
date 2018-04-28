@@ -4,6 +4,10 @@ let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 class Vue {
 
+    constructor() {
+        this.requiresCssExtraction = false;
+    }
+
     /**
      * Required dependencies for the component.
      */
@@ -29,6 +33,7 @@ class Vue {
         webpackConfig.plugins.push(new VueLoaderPlugin());
 
         if (Config.extractVueStyles) {
+            this.requiresCssExtraction = true;
             const newConfig = webpackMerge.smart(webpackConfig, this.config());
             webpackConfig.optimization = newConfig.optimization;
         }
