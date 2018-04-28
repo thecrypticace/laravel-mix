@@ -29,14 +29,8 @@ class Vue {
         webpackConfig.plugins.push(new VueLoaderPlugin());
 
         if (Config.extractVueStyles) {
-
             const newConfig = webpackMerge.smart(webpackConfig, this.config());
             webpackConfig.optimization = newConfig.optimization;
-
-            let extractPlugin = this.extractPlugin();
-            if (extractPlugin) {
-                webpackConfig.plugins.push(extractPlugin);
-            }
         }
     }
 
@@ -109,31 +103,6 @@ class Vue {
         return loaders;
     }
 
-    extractPlugin() {
-        if (typeof Config.extractVueStyles === 'string') {
-            return new MiniCssExtractPlugin({
-                filename: this.extractFilePath(),
-                chunkFilename: this.extractFilePath()
-            });
-        }
-
-        let preprocessorName = Object.keys(Mix.components.all())
-            .reverse()
-            .find(componentName => {
-                return ['sass', 'less', 'stylus', 'postCss'].includes(
-                    componentName
-                );
-            });
-
-        if (!preprocessorName) {
-            return new MiniCssExtractPlugin({
-                filename: this.extractFilePath(),
-                chunkFilename: this.extractFilePath()
-            });
-        }
-        return false;
-    }
-
     /**
      * vue-loader-specific options.
      */
@@ -150,9 +119,9 @@ class Vue {
         let fileName =
             typeof Config.extractVueStyles === 'string'
                 ? Config.extractVueStyles
-                : '/css/vue-styles.css';
+                : '/css/vue-styles';
 
-        return fileName.replace(Config.publicPath, '').replace(/^\//, '');
+        return fileName.replace(Config.publicPath, '').replace(/^\//, '').replace('.css', '');
     }
 
     config() {
@@ -160,18 +129,18 @@ class Vue {
             optimization: {
                 splitChunks: {
                     cacheGroups: {
-                        vue : {
+                        extractVueStyles: {
                             test: m => {
-                                return /\.vue\?vue&type=style/.test(m._identifier);
+                                return /\.vue\?vue&type=style/.test(m.identifier());
                             },
                             name: this.extractFilePath(),
-                            chunks: 'all',
-                            enforce: true
-                        }
-                    }
+                            chunks: "all",
+                            enforce: true,
+                        },
+                    },
                 }
             }
-        };
+        }
     }
 }
 
