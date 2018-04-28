@@ -41,7 +41,6 @@ class Preprocessor {
      * @param {Object} preprocessor
      */
     config(preprocessor) {
-        console.info(`SASS PATH : ${preprocessor.output.segments.path.replace('.css', '')}`)
         return {
             optimization: {
                 splitChunks: {
