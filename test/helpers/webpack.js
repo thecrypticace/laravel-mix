@@ -1,16 +1,26 @@
 import webpack from 'webpack';
 
+/**
+ *
+ * @returns {import("webpack").Configuration}
+ */
 export function buildConfig() {
     Mix.dispatch('init');
 
     return webpackConfig.build();
 }
 
+/**
+ *
+ * @param {import("webpack").Configuration|null} config
+ */
 export async function compile(config) {
     config = config || buildConfig();
 
     return new Promise((resolve, reject) => {
-        webpack(config, (err, stats) => {
+        const compiler = webpack(config);
+
+        compiler.run((err, stats) => {
             if (err) {
                 reject({ config, err, stats });
             } else if (stats.hasErrors()) {
