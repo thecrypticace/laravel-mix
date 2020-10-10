@@ -1,6 +1,7 @@
 let path = require('path');
 let TerserPlugin = require('terser-webpack-plugin');
 
+/** @returns {import("webpack").Configuration} */
 module.exports = function() {
     return {
         context: Mix.paths.root(),
