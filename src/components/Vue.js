@@ -18,6 +18,7 @@ class Vue {
      * @param {number} [options.version] Which version of Vue to support. Detected automatically if not given.
      * @param {string|null} [options.globalStyles] A file to include w/ every vue style block.
      * @param {boolean|string} [options.extractStyles] Whether or not to extract vue styles. If given a string the name of the file to extract to.
+     * @param {Record<string, string|boolean>} [options.features] Vue 3 feature flags
      */
     register(options = {}) {
         if (
@@ -35,10 +36,13 @@ class Vue {
         this.options = Object.assign(
             {
                 globalStyles: null,
-                extractStyles: false
+                extractStyles: false,
+                features: null
             },
             options
         );
+
+        this.options.features = this.resolveFeatures(options);
 
         Mix.globalStyles = this.options.globalStyles;
         Mix.extractingStyles = !!this.options.extractStyles;
@@ -111,7 +115,11 @@ class Vue {
     webpackPlugins() {
         let { VueLoaderPlugin } = require('vue-loader');
 
-        return [new VueLoaderPlugin(), new AppendVueStylesPlugin()];
+        return [
+            new VueLoaderPlugin(),
+            new AppendVueStylesPlugin(),
+            new webpack.DefinePlugin(this.options.features || {})
+        ];
     }
 
     /**
@@ -176,6 +184,30 @@ class Vue {
                 : '/css/vue-styles.css';
 
         return fileName.replace(Config.publicPath, '').replace(/^\//, '');
+    }
+
+    /**
+     *
+     * @param {*} options
+     * @returns {Record<string, string|boolean>}
+     */
+    resolveFeatures(options) {
+        if (this.version === 2) {
+            if (options.features) {
+                console.warn(
+                    'mix.vue({ features: { … } }) is only supported for Vue 3'
+                );
+            }
+
+            return {};
+        }
+
+        return (
+            options.features || {
+                __VUE_OPTIONS_API__: 'true',
+                __VUE_PROD_DEVTOOLS__: 'false'
+            }
+        );
     }
 }
 
