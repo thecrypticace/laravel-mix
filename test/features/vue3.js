@@ -346,3 +346,15 @@ test('it supports global Vue styles for sass', async t => {
 
     postCssConfigFile.delete();
 });
+
+test('Vue 3 feature flags work', async t => {
+    mix.vue({
+        version: 3,
+        features: {
+            __VUE_OPTIONS_API__: false,
+            __VUE_PROD_DEVTOOLS__: false
+        }
+    });
+
+    mix.js(`test/fixtures/app/src/vue3/app-with-vue-and-css.js`, 'js/app.js');
+});

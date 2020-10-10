@@ -2,6 +2,7 @@ let { Chunks } = require('../Chunks');
 let File = require('../File');
 let VueVersion = require('../VueVersion');
 let AppendVueStylesPlugin = require('../webpackPlugins/Css/AppendVueStylesPlugin');
+let webpack = require('webpack');
 
 class Vue {
     /**
@@ -204,8 +205,8 @@ class Vue {
 
         return (
             options.features || {
-                __VUE_OPTIONS_API__: 'true',
-                __VUE_PROD_DEVTOOLS__: 'false'
+                __VUE_OPTIONS_API__: true,
+                __VUE_PROD_DEVTOOLS__: false
             }
         );
     }
