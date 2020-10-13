@@ -1,10 +1,13 @@
 let os = require('os');
 let md5 = require('md5');
 let path = require('path');
-let fs = require('fs-extra');
+let localFs = require('fs-extra');
 let Terser = require('terser');
 let UglifyCss = require('clean-css');
 const { escapeRegExp } = require('lodash');
+
+/** @type {import("memfs").IFs|import("fs-extra")} */
+let fs = localFs;
 
 class File {
     /**
@@ -16,6 +19,22 @@ class File {
         this.absolutePath = path.resolve(filePath);
         this.filePath = this.relativePath();
         this.segments = this.parse();
+    }
+
+    static useFileSystem(filesystem) {
+        fs = filesystem;
+
+        if (!fs.ensureDirSync) {
+            fs.ensureDirSync = path => {
+                fs.mkdirSync(path, {
+                    recursive: true
+                });
+            };
+        }
+    }
+
+    static getFileSystem() {
+        return fs;
     }
 
     /**

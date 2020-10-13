@@ -1,4 +1,7 @@
 import webpack from 'webpack';
+import { createFsFromVolume, Volume } from 'memfs';
+
+import File from '../../src/File';
 
 /**
  *
@@ -17,8 +20,16 @@ export function buildConfig() {
 export async function compile(config) {
     config = config || buildConfig();
 
+    const vol = new Volume();
+    const fs = createFsFromVolume(vol);
+
+    File.useFileSystem(fs);
+
     return new Promise((resolve, reject) => {
         const compiler = webpack(config);
+
+        // compiler.inputFileSystem = fs;
+        compiler.outputFileSystem = fs;
 
         compiler.run((err, stats) => {
             if (err) {
@@ -26,9 +37,7 @@ export async function compile(config) {
             } else if (stats.hasErrors()) {
                 const { errors } = stats.toJson({ errors: true });
 
-                reject(
-                    new Error(errors.map(error => error.message).join('\n'))
-                );
+                reject(new Error(errors.map(error => error.message).join('\n')));
             } else {
                 resolve({ config, err, stats });
             }
