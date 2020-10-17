@@ -82,7 +82,6 @@
         "lodash": "^4.17.15",
         "md5": "^2.2.1",
         "mini-css-extract-plugin": "^1.0.0",
-        "postcss": "^8.1.0",
         "postcss-load-config": "^3.0.0",
         "postcss-loader": "^4.0.3",
         "style-loader": "^2.0.0",
@@ -128,6 +127,9 @@
         "vue-template-compiler": "^2.6.12",
         "vue2": "npm:vue@^2.6.12",
         "vue3": "npm:vue@^3.0.0"
+    },
+    "peerDependencies": {
+        "postcss": "^8.1.0"
     },
     "engines": {
         "node": ">=12.14.0"
