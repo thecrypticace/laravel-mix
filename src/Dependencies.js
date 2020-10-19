@@ -3,11 +3,21 @@ let Log = require('./Log');
 let argv = require('yargs').argv;
 let collect = require('collect.js');
 
+/**
+ * @typedef {object} DependencyObject
+ * @property {string} package
+ * @property {(obj: any) => boolean} [isInstalled]
+ */
+
+/**
+ * @typedef {string|DependencyObject} Dependency
+ */
+
 class Dependencies {
     /**
      * Create a new Dependencies instance.
      *
-     * @param {Object} dependencies
+     * @param {Dependency[]} dependencies
      */
     constructor(dependencies) {
         this.dependencies = dependencies;
@@ -19,27 +29,20 @@ class Dependencies {
      * @param {Boolean} abortOnComplete
      */
     install(abortOnComplete = false) {
-        collect(this.dependencies)
-            .reject(dependency => {
-                try {
-                    return require.resolve(
-                        dependency.replace(/(?!^@)@.+$/, '')
-                    );
-                } catch (e) {
-                    //
-                }
-            })
-            .pipe(dependencies => {
-                if (!dependencies.count()) {
-                    return;
-                }
+        // Normalize dependencies into
+        let dependencies = this.dependencies.map(dep => this.normalize(dep));
 
-                this.execute(
-                    this.buildInstallCommand(dependencies.all()),
-                    dependencies.all(),
-                    abortOnComplete
-                );
-            });
+        dependencies = dependencies.filter(dep => !dep.isInstalled());
+
+        if (dependencies.length) {
+            return;
+        }
+
+        this.execute(
+            this.buildInstallCommand(dependencies),
+            dependencies.all(),
+            abortOnComplete
+        );
     }
 
     /**
@@ -70,10 +73,10 @@ class Dependencies {
     /**
      * Build the dependency install command.
      *
-     * @param {Object}  dependencies
+     * @param {DependencyObject[]}  dependencies
      */
     buildInstallCommand(dependencies) {
-        dependencies = [].concat(dependencies).join(' ');
+        dependencies = dependencies.map(dep => dep.package).join(' ');
 
         return `npm install ${dependencies} --save-dev --production=false`;
     }
@@ -95,6 +98,28 @@ class Dependencies {
                 process.exit();
             }
         }
+    }
+
+    /**
+     * @param {Dependency} dep
+     * @returns {DependencyObject}
+     */
+    normalize() {
+        if (typeof dep === 'string') {
+            dep = { package: dep };
+        }
+
+        function canFindPackage(pkg) {
+            try {
+                return !!require.resolve(pkg.replace(/(?!^@)@.+$/, ''));
+            } catch (e) {
+                return false;
+            }
+        }
+
+        dep.isInstalled = dep.isInstalled || (() => canFindPackage(dep.package));
+
+        return dep;
     }
 }
 
