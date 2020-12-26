@@ -129,7 +129,9 @@ class Vue {
             this.styleChunkName(),
             [/.vue$/, module => module.type === 'css/mini-extract'],
             {
-                chunks: 'all',
+                // TODO: Switch this back to 'all' when we figure out
+                // a way to handle async vue component style extraction
+                chunks: 'initial',
                 enforce: true,
                 type: 'css/mini-extract'
             }
