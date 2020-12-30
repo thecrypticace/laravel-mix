@@ -1,4 +1,5 @@
 let Assert = require('../Assert');
+let Dependencies = require('../Dependencies');
 let mergeWebpackConfig = require('../builder/MergeWebpackConfig');
 
 let components = [
@@ -45,6 +46,12 @@ class ComponentRegistrar {
         this.components = {};
     }
 
+    installDependenciesWhenReady() {
+        Mix.listen('internal:install-dependencies', () => {
+            Dependencies.installQueued();
+        });
+    }
+
     /**
      * Install all default components.
      */
@@ -64,12 +71,23 @@ class ComponentRegistrar {
 
         this.registerComponent(component);
 
+        Mix.listen('internal:gather-dependencies', () => {
+            if (!component.activated && !component.passive) {
+                return;
+            }
+
+            if (!component.dependencies) {
+                return;
+            }
+
+            Dependencies.queue(component.dependencies());
+        });
+
         Mix.listen('init', () => {
             if (!component.activated && !component.passive) {
                 return;
             }
 
-            component.dependencies && this.installDependencies(component);
             component.boot && component.boot();
             component.babelConfig && this.applyBabelConfig(component);
 

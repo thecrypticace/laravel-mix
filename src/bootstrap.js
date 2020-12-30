@@ -18,5 +18,7 @@ module.exports = () => {
 
     Mix.registrar = new ComponentRegistrar();
 
+    Mix.registrar.installDependenciesWhenReady();
+
     return tap(Mix.registrar.installAll(), () => Chunks.reset());
 };

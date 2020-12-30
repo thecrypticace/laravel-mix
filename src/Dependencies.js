@@ -13,6 +13,14 @@ let PackageManager = require('./PackageManager');
  * @typedef {string|DependencyObject} Dependency
  */
 
+const queue = {
+    /** @type {Dependency[]} */
+    items: [],
+
+    /** @type {boolean} */
+    abortOnComplete: false
+};
+
 class Dependencies {
     /**
      * Create a new Dependencies instance.
@@ -21,6 +29,25 @@ class Dependencies {
      */
     constructor(dependencies) {
         this.dependencies = dependencies;
+    }
+
+    /**
+     * Create a new Dependencies instance.
+     *
+     * @param {Dependency[]} dependencies
+     */
+    static queue(dependencies, abortOnComplete = false) {
+        queue.items.concat(dependencies);
+        queue.abortOnComplete = queue.abortOnComplete || abortOnComplete;
+    }
+
+    /**
+     * Create a new Dependencies instance.
+     *
+     * @param {Dependency[]} dependencies
+     */
+    static installQueued() {
+        new Dependencies(queue.items).install(queue.abortOnComplete);
     }
 
     /**
