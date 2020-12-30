@@ -18,7 +18,7 @@ const queue = {
     items: [],
 
     /** @type {boolean} */
-    abortOnComplete: false
+    requiresReload: false
 };
 
 class Dependencies {
@@ -36,9 +36,9 @@ class Dependencies {
      *
      * @param {Dependency[]} dependencies
      */
-    static queue(dependencies, abortOnComplete = false) {
+    static queue(dependencies, requiresReload = false) {
         queue.items.concat(dependencies);
-        queue.abortOnComplete = queue.abortOnComplete || abortOnComplete;
+        queue.requiresReload = queue.requiresReload || requiresReload;
     }
 
     /**
@@ -47,7 +47,7 @@ class Dependencies {
      * @param {Dependency[]} dependencies
      */
     static installQueued() {
-        new Dependencies(queue.items).install(queue.abortOnComplete);
+        new Dependencies(queue.items).install(queue.requiresReload);
     }
 
     /**
