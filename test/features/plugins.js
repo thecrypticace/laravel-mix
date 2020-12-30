@@ -48,13 +48,28 @@ test('dependencies can be requested for download', t => {
         }()
     );
 
+    mix.extend(
+        'foobar2',
+        new class {
+            dependencies() {
+                this.requiresReload = true;
+
+                return ['npm-package2'];
+            }
+
+            register() {}
+        }()
+    );
+
     mix.foobar();
+    mix.foobar2();
 
     Mix.dispatch('internal:gather-dependencies');
     Mix.dispatch('internal:install-dependencies');
     Mix.dispatch('init');
 
-    t.true(Dependencies.queue.calledWith(['npm-package']));
+    t.true(Dependencies.queue.calledWith(['npm-package'], false));
+    t.true(Dependencies.queue.calledWith(['npm-package2'], true));
     t.true(Dependencies.installQueued.calledWith());
 });
 

@@ -80,7 +80,10 @@ class ComponentRegistrar {
                 return;
             }
 
-            Dependencies.queue(component.dependencies());
+            Dependencies.queue(
+                component.dependencies(),
+                component.requiresReload || false
+            );
         });
 
         Mix.listen('init', () => {
