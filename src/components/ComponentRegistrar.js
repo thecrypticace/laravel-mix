@@ -162,6 +162,7 @@ class ComponentRegistrar {
     /**
      * Install the component's dependencies.
      *
+     * @deprecated
      * @param {Object} component
      */
     installDependencies(component) {
