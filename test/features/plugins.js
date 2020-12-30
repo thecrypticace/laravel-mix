@@ -32,9 +32,10 @@ test('mix can be extended with new functionality as a class', t => {
 });
 
 test('dependencies can be requested for download', t => {
-    let Assert = require('../../src/Assert');
+    let Dependencies = require('../../src/Dependencies');
 
-    Assert.dependencies = sinon.spy();
+    Dependencies.queue = sinon.spy();
+    Dependencies.installQueued = sinon.spy();
 
     mix.extend(
         'foobar',
@@ -49,9 +50,12 @@ test('dependencies can be requested for download', t => {
 
     mix.foobar();
 
+    Mix.dispatch('internal:gather-dependencies');
+    Mix.dispatch('internal:install-dependencies');
     Mix.dispatch('init');
 
-    t.true(Assert.dependencies.calledWith(['npm-package']));
+    t.true(Dependencies.queue.calledWith(['npm-package']));
+    t.true(Dependencies.installQueued.calledWith());
 });
 
 test('webpack entry may be appended to', async t => {
