@@ -3,7 +3,14 @@ module.exports = async () => {
 
     require('../src/index');
 
-    require(Mix.paths.mix());
+    try {
+        require(Mix.paths.mix());
+    } catch (err) {
+        console.error(
+            `There was an error loading your Laravel Mix config file (${Mix.paths.mix()})`
+        );
+        console.error(err);
+    }
 
     await Mix.dispatch('internal:gather-dependencies');
     await Mix.dispatch('internal:install-dependencies');
