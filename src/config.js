@@ -168,13 +168,6 @@ module.exports = function() {
         cleanCss: {},
 
         /**
-         * Custom Webpack-specific configuration to merge/override Mix's.
-         *
-         * @type {Object}
-         */
-        webpackConfig: {},
-
-        /**
          * Custom Babel configuration to be merged with Mix's defaults.
          *
          * @type {Object}
