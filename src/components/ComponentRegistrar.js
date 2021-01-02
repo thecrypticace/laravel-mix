@@ -42,14 +42,12 @@ let components = [
 ];
 
 class ComponentRegistrar {
-    constructor() {
-        this.components = {};
-    }
+    /** @param {import("../Mix")} mix */
+    constructor(mix) {
+        this.mix = mix;
 
-    installDependenciesWhenReady() {
-        Mix.listen('internal:install-dependencies', () => {
-            Dependencies.installQueued();
-        });
+        /** @type {Record<string, (...args: any) => void>} */
+        this.components = {};
     }
 
     /**
@@ -67,11 +65,12 @@ class ComponentRegistrar {
      * @param {Component} Component
      */
     install(Component) {
-        let component = typeof Component === 'function' ? new Component() : Component;
+        let component =
+            typeof Component === 'function' ? new Component(this.mix) : Component;
 
         this.registerComponent(component);
 
-        Mix.listen('internal:gather-dependencies', () => {
+        this.mix.listen('internal:gather-dependencies', () => {
             if (!component.activated && !component.passive) {
                 return;
             }

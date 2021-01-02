@@ -1,4 +1,3 @@
-let instance;
 let path = require('path');
 
 /** @typedef {any} CacheGroup */
@@ -14,7 +13,16 @@ let path = require('path');
  */
 
 class Chunks {
-    constructor() {
+    /** @type {Chunks|null} */
+    static _instance = null;
+
+    /**
+     *
+     * @param {import("./Mix")} mix
+     */
+    constructor(mix) {
+        this.mix = mix;
+
         /** @type {{[key: string]: CacheGroup}} */
         this.chunks = {};
 
@@ -28,14 +36,11 @@ class Chunks {
      * @return {Chunks}
      */
     static instance() {
-        return instance || this.reset();
+        return Chunks._instance || (Chunks._instance = new Chunks(global.Config));
     }
 
-    /**
-     * @return {Chunks}
-     */
-    static reset() {
-        return (instance = new Chunks());
+    makeCurrent() {
+        Chunks._instance = this;
     }
 
     /**
@@ -123,7 +128,7 @@ class Chunks {
         return {
             runtimeChunk: {
                 name: path
-                    .join(Config.runtimeChunkPath || this.entry.base, 'manifest')
+                    .join(this.mix.config.runtimeChunkPath || this.entry.base, 'manifest')
                     .replace(/\\/g, '/')
             }
         };

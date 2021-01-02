@@ -1,25 +1,25 @@
 let path = require('path');
 let Entry = require('./Entry');
-let { Chunks } = require('../Chunks');
 let webpackRules = require('./webpack-rules');
 let webpackPlugins = require('./webpack-plugins');
 let webpackDefaultConfig = require('./webpack-default');
 
-process.noDeprecation = true;
-
 class WebpackConfig {
     /**
      * Create a new instance.
+     *
+     * @param {import("../Context").Context} context
      */
-    constructor() {
-        this.chunks = Chunks.instance();
+    constructor(context) {
+        this.chunks = context.chunks;
+        this.config = context.config;
     }
 
     /**
      * Build the Webpack configuration object.
      */
     async build() {
-        this.webpackConfig = webpackDefaultConfig();
+        this.webpackConfig = webpackDefaultConfig(this.config);
 
         await this.buildEntry();
         this.buildOutput();
@@ -66,7 +66,7 @@ class WebpackConfig {
      */
     buildOutput() {
         this.webpackConfig.output = {
-            path: path.resolve(Config.publicPath),
+            path: path.resolve(this.config.publicPath),
             filename: '[name].js',
 
             chunkFilename: pathData => {
@@ -92,7 +92,9 @@ class WebpackConfig {
         }
 
         let http = process.argv.includes('--https') ? 'https' : 'http';
-        const url = `${http}://${Config.hmrOptions.host}:${Config.hmrOptions.port}/`;
+        const url = `${http}://${this.config.hmrOptions.host}:${
+            this.config.hmrOptions.port
+        }/`;
 
         this.webpackConfig.output = {
             ...this.webpackConfig.output,
@@ -100,7 +102,7 @@ class WebpackConfig {
             publicPath: url
         };
 
-        const { host, port } = Config.hmrOptions;
+        const { host, port } = this.config.hmrOptions;
 
         this.webpackConfig.devServer = {
             host,

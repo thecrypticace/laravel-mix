@@ -1,5 +1,8 @@
 module.exports = async () => {
+    process.noDeprecation = true;
+
     require('../src/index');
+
     require(Mix.paths.mix());
 
     await Mix.dispatch('internal:gather-dependencies');

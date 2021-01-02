@@ -1,8 +1,6 @@
-require('./helpers');
-require('dotenv').config();
+const { Context } = require('./Context');
 
-let WebpackConfig = require('./builder/WebpackConfig');
-let Chunks = require('./Chunks').Chunks;
+require('./helpers');
 
 /**
  * Boot the Mix framework.
@@ -10,15 +8,10 @@ let Chunks = require('./Chunks').Chunks;
  * @returns {typeof import('../types/index')}
  */
 module.exports = () => {
-    global.Config = require('./config')();
-    global.Mix = new (require('./Mix'))();
-    global.webpackConfig = new WebpackConfig();
+    let context = new Context();
 
-    let ComponentRegistrar = require('./components/ComponentRegistrar');
+    context.boot();
+    context.makeCurrent();
 
-    Mix.registrar = new ComponentRegistrar();
-
-    Mix.registrar.installDependenciesWhenReady();
-
-    return tap(Mix.registrar.installAll(), () => Chunks.reset());
+    return context.api();
 };

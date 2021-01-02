@@ -1,6 +1,5 @@
 let path = require('path');
 let File = require('../File');
-let { Chunks } = require('../Chunks');
 
 /** @typedef {import('../../types/extract').Extraction} Extraction */
 /** @typedef {import('../../types/extract').ExtractConfig} ExtractConfig */
@@ -9,14 +8,18 @@ let { Chunks } = require('../Chunks');
 class Extract {
     /**
      * Create a new component instance.
+     *
+     * @param {import("../Mix")} mix
      */
-    constructor() {
+    constructor(mix) {
+        this.mix = mix;
+
         /** @type {Entry|null} */
         this.entry = null;
 
         /** @type {Extraction[]} */
         this.extractions = [];
-        this.chunks = Chunks.instance();
+        this.chunks = mix.chunks;
         this.chunks.runtime = true;
     }
 
@@ -48,7 +51,7 @@ class Extract {
         this.entry = entry;
         this.chunks.entry = entry;
 
-        if (!Mix.bundlingJavaScript) {
+        if (!this.mix.bundlingJavaScript) {
             throw new Error('You must compile JS to extract vendor code');
         }
 

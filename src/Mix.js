@@ -1,20 +1,81 @@
-let File = require('./File');
-let Paths = require('./Paths');
-let Manifest = require('./Manifest');
-let Dispatcher = require('./Dispatcher');
+let buildConfig = require('./config');
+let { Chunks } = require('./Chunks');
+let ComponentRegistrar = require('./components/ComponentRegistrar');
 let Components = require('./components/Components');
+let Dispatcher = require('./Dispatcher');
+let Dotenv = require('dotenv');
+let File = require('./File');
+let Manifest = require('./Manifest');
+let Paths = require('./Paths');
+let WebpackConfig = require('./builder/WebpackConfig');
+let HotReloading = require('./HotReloading');
+let Dependencies = require('./Dependencies');
+
+/** @typedef {import("./tasks/Task")} Task */
+/** @typedef {import('../types/component').Dependency} Dependency */
 
 class Mix {
+    /** @type {Mix[]} */
+    static all = [];
+
+    /** @type {Mix[]} */
+    static current = [];
+
     /**
      * Create a new instance.
+     *
+     * @param {Mix|null} parent
      */
-    constructor() {
-        this.paths = new Paths();
-        this.manifest = new Manifest();
-        this.dispatcher = new Dispatcher();
-        this.tasks = [];
-        this.bundlingJavaScript = false;
+    constructor(parent = null) {
+        /** @type {ReturnType<buildConfig>} */
+        this.config = parent ? parent.config : buildConfig();
+
+        this.chunks = new Chunks(this);
         this.components = new Components();
+        this.dispatcher = new Dispatcher();
+        this.manifest = new Manifest();
+        this.paths = new Paths();
+        this.registrar = new ComponentRegistrar(this);
+        this.webpackConfig = new WebpackConfig(this);
+
+        /** @type {Task[]} */
+        this.tasks = [];
+
+        /** @type {Dependency[]} */
+        this.dependencies = [];
+
+        this.bundlingJavaScript = false;
+
+        /**
+         * @internal
+         * @type {string|null}
+         */
+        this.globalStyles = null;
+
+        /**
+         * @internal
+         * @type {boolean|string}
+         **/
+        this.extractingStyles = false;
+    }
+
+    boot() {
+        // Load .env
+        Dotenv.config();
+
+        // If we're using Laravel set the public path by default
+        if (this.sees('laravel')) {
+            this.config.publicPath = 'public';
+        }
+
+        this.listen('init', () => new HotReloading(this.config).record());
+        this.listen('internal:install-dependencies', () => Dependencies.installQueued());
+    }
+
+    get api() {
+        this._api = this._api || new Api(this.registrar.installAll());
+
+        return this._api;
     }
 
     /**
@@ -23,14 +84,14 @@ class Mix {
      * @param {string} tool
      */
     isUsing(tool) {
-        return !!Config[tool];
+        return !!this.config[tool];
     }
 
     /**
      * Determine if Mix is executing in a production environment.
      */
     inProduction() {
-        return Config.production;
+        return this.config.production;
     }
 
     /**
@@ -106,6 +167,57 @@ class Mix {
         }
 
         return this.dispatcher.fire(event, data);
+    }
+
+    /** @internal */
+    pushCurrent() {
+        Mix.current.push(this.makeCurrent());
+    }
+
+    /** @internal */
+    popCurrent() {
+        Mix.current.pop();
+
+        const context = Mix.current[Mix.current.length - 1];
+        context && context.makeCurrent();
+    }
+
+    /**
+     * @internal
+     * @template T
+     * @param {(mix: Mix) => T} callback
+     */
+    withChild(callback) {
+        return new Mix(this).whileCurrent(callback);
+    }
+
+    /**
+     * @internal
+     * @template T
+     * @param {(mix: Mix) => T} callback
+     */
+    whileCurrent(callback) {
+        this.pushCurrent();
+        const result = callback(this);
+        this.popCurrent();
+
+        return result;
+    }
+
+    /**
+     * @internal
+     */
+    makeCurrent() {
+        // Set up some globals from current context
+        // The goal would to be eventually remove these
+
+        global.Config = this.config;
+        global.Mix = this;
+        global.webpackConfig = this.webpackConfig;
+
+        this.chunks.makeCurrent();
+
+        return this;
     }
 }
 

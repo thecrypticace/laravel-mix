@@ -11,13 +11,7 @@
 
 let mix = require('./bootstrap')();
 
-if (Mix.sees('laravel')) {
-    Config.publicPath = 'public';
-}
+// Legacy.
+mix.inProduction = () => Config.production;
 
-Mix.listen('init', () => require('./HotReloading').record());
-
-module.exports = tap(mix, mix => {
-    // Legacy.
-    mix.inProduction = () => Config.production;
-});
+module.exports = mix;

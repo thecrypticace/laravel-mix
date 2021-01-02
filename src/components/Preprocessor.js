@@ -1,7 +1,6 @@
 let Assert = require('../Assert');
 let path = require('path');
 let File = require('../File');
-let { Chunks } = require('../Chunks');
 let CssWebpackConfig = require('./CssWebpackConfig');
 let PostCssPluginsFactory = require('../PostCssPluginsFactory');
 
@@ -18,9 +17,15 @@ let PostCssPluginsFactory = require('../PostCssPluginsFactory');
 class Preprocessor {
     /**
      * Create a new component instance.
+     *
+     * @param {import("../Mix")} mix
      */
-    constructor() {
-        this.chunks = Chunks.instance();
+    constructor(mix) {
+        this.mix = mix;
+        this.chunks = mix.chunks;
+
+        /** @type {Detail[]} */
+        this.details = [];
     }
 
     /**
@@ -58,7 +63,7 @@ class Preprocessor {
                 loader: 'css-loader',
                 options: {
                     url: processUrls,
-                    sourceMap: Mix.isUsing('sourcemaps'),
+                    sourceMap: this.mix.isUsing('sourcemaps'),
                     importLoaders: 1
                 }
             },
@@ -101,7 +106,7 @@ class Preprocessor {
      */
     loaderOptions(preprocessor) {
         return Object.assign(preprocessor.pluginOptions, {
-            sourceMap: Mix.isUsing('sourcemaps')
+            sourceMap: this.mix.isUsing('sourcemaps')
         });
     }
 
@@ -112,9 +117,9 @@ class Preprocessor {
      */
     postCssLoaderOptions(preprocessor) {
         return {
-            sourceMap: Mix.isUsing('sourcemaps'),
+            sourceMap: this.mix.isUsing('sourcemaps'),
             postcssOptions: {
-                plugins: new PostCssPluginsFactory(preprocessor, Config).load(),
+                plugins: new PostCssPluginsFactory(preprocessor, this.mix.config).load(),
                 hideNothingWarning: true
             }
         };
@@ -127,7 +132,7 @@ class Preprocessor {
      * @param {string} src
      * @param {string} output
      * @param {object} pluginOptions
-     * @param {Array} postCssPlugins
+     * @param {import('postcss').AcceptedPlugin[]} postCssPlugins
      */
     preprocess(type, src, output, pluginOptions = {}, postCssPlugins = []) {
         Assert.preprocessor(type, src, output);
@@ -139,8 +144,7 @@ class Preprocessor {
             src.nameWithoutExtension() + '.css'
         );
 
-        /** @type {Detail[]} */
-        this.details = (this.details || []).concat({
+        this.details.push({
             type: this.constructor.name.toLowerCase(),
             src,
             output,
@@ -162,7 +166,7 @@ class Preprocessor {
         const processUrls =
             preprocessor.pluginOptions.processUrls !== undefined
                 ? preprocessor.pluginOptions.processUrls
-                : Config.processCssUrls;
+                : this.mix.config.processCssUrls;
 
         delete preprocessor.pluginOptions.processUrls;
 

@@ -1,4 +1,3 @@
-let { Chunks } = require('../Chunks');
 let File = require('../File');
 let VueVersion = require('../VueVersion');
 let AppendVueStylesPlugin = require('../webpackPlugins/Css/AppendVueStylesPlugin');
@@ -8,9 +7,14 @@ let AppendVueStylesPlugin = require('../webpackPlugins/Css/AppendVueStylesPlugin
 class Vue {
     /**
      * Create a new component instance.
+     *
+     * @param {import("../Mix")} mix
      */
-    constructor() {
-        this.chunks = Chunks.instance();
+    constructor(mix) {
+        this.mix = mix;
+        this.config = mix.config;
+        this.chunks = mix.chunks;
+
         this.options = {
             /** @type {VueLoaderOptions|null} */
             options: null,
@@ -50,8 +54,8 @@ class Vue {
 
         this.options = Object.assign(this.options, options);
 
-        Mix.globalStyles = this.options.globalStyles;
-        Mix.extractingStyles = !!this.options.extractStyles;
+        this.mix.globalStyles = this.options.globalStyles;
+        this.mix.extractingStyles = !!this.options.extractStyles;
     }
 
     /**
@@ -84,7 +88,7 @@ class Vue {
             use: [
                 {
                     loader: 'vue-loader',
-                    options: this.options.options || Config.vue || {}
+                    options: this.options.options || this.config.vue || {}
                 }
             ]
         });
@@ -181,7 +185,7 @@ class Vue {
                 ? this.options.extractStyles
                 : '/css/vue-styles.css';
 
-        return fileName.replace(Config.publicPath, '').replace(/^\//, '');
+        return fileName.replace(this.config.publicPath, '').replace(/^\//, '');
     }
 }
 
