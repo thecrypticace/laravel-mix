@@ -1,15 +1,16 @@
 let instance;
 let path = require('path');
 
-/** @typedef {import("webpack/declarations/WebpackOptions").OptimizationSplitChunksCacheGroup} CacheGroup */
+/** @typedef {any} CacheGroup */
+/** @typedef {any} CacheGroupsContext */
 
 /**
- * @typedef {(module: import("webpack").Module, chunks: import("webpack").ChunkData[]) => bool} ChunkTestCallback
+ * @typedef {(module: import("webpack").Module, chunks: import("webpack").Chunk[]) => boolean} ChunkTestCallback
  * @typedef {undefined|boolean|string|RegExp|ChunkTestCallback} ChunkTest
  */
 
 /**
- * @typedef {(chunk: CacheGroup, id: string) => bool} ChunkFindCallback
+ * @typedef {(chunk: CacheGroup, id: string) => boolean} ChunkFindCallback
  */
 
 class Chunks {
@@ -17,7 +18,9 @@ class Chunks {
         /** @type {{[key: string]: CacheGroup}} */
         this.chunks = {};
 
+        /** @type {import('./builder/Entry')|null} */
         this.entry = null;
+
         this.runtime = false;
     }
 
@@ -152,8 +155,7 @@ class Chunks {
      * @internal
      *
      * @param {(undefined|boolean|string|RegExp|Function)[]} tests
-     * @param {Module} module the module
-     * @param {CacheGroupsContext} context context object
+     * @returns {(module: import("webpack").Module, context: CacheGroupsContext) => boolean}
      */
     _checkAllTests(tests) {
         return (module, context) =>
@@ -168,8 +170,7 @@ class Chunks {
      * @internal
      *
      * @param {(undefined|boolean|string|RegExp|Function)[]} tests
-     * @param {Module} module the module
-     * @param {CacheGroupsContext} context context object
+     * @returns {(module: import("webpack").Module, context: CacheGroupsContext) => boolean}
      */
     _checkAnyTests(tests) {
         return (module, context) =>
@@ -223,12 +224,12 @@ class Chunks {
         if (typeof test === 'string') {
             const name = module.nameForCondition();
 
-            return name && name.startsWith(test);
+            return !!(name && name.startsWith(test));
         }
         if (test instanceof RegExp) {
             const name = module.nameForCondition();
 
-            return name && test.test(name);
+            return !!(name && test.test(name));
         }
 
         return false;

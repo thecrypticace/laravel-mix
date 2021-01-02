@@ -1,5 +1,8 @@
 const argv = require('yargs').argv;
 
+/** @typedef {import('../types/config').MixConfig} MixConfig */
+
+/** @returns {MixConfig} */
 module.exports = function() {
     return {
         /**
@@ -19,7 +22,7 @@ module.exports = function() {
         /**
          * Hostname and port used for the hot reload module
          *
-         * @type {Object}
+         * @type {{host: string, port: string}}
          */
         hmrOptions: {
             host: 'localhost',
@@ -31,7 +34,7 @@ module.exports = function() {
          *
          * See: https://github.com/postcss/postcss/blob/master/docs/plugins.md
          *
-         * @type {Array}
+         * @type {import('postcss').AcceptedPlugin[]}
          */
         postCss: [],
 
@@ -39,7 +42,7 @@ module.exports = function() {
          * Determine if we should enable autoprefixer by default.
          * May be set to false to disable it.
          *
-         * @type {Boolean|Object}
+         * @type {false|import('autoprefixer').Options}
          */
         autoprefixer: {},
 
@@ -62,7 +65,7 @@ module.exports = function() {
         /**
          * Determine if error notifications should be displayed for each build.
          *
-         * @type {Boolean}
+         * @type {{onSuccess?:boolean, onFailure?:boolean}}
          */
         notifications: {
             onSuccess: true,
@@ -72,7 +75,7 @@ module.exports = function() {
         /**
          * Determine if sourcemaps should be created for the build.
          *
-         * @type {Boolean}
+         * @type {false | string}
          */
         sourcemaps: false,
 
@@ -110,7 +113,7 @@ module.exports = function() {
         /**
          * The default Babel configuration.
          *
-         * @type {String} babelRcPath
+         * @param {string} babelRcPath
          */
         babel: function(babelRcPath) {
             babelRcPath = babelRcPath || Mix.paths.root('.babelrc');
@@ -151,7 +154,7 @@ module.exports = function() {
          *
          * See: https://cssnano.co/optimisations/
          *
-         * @type {Boolean|Object}
+         * @type {false|import('cssnano').CssNanoOptions}
          */
         cssNano: {},
 
@@ -200,17 +203,18 @@ module.exports = function() {
          *
          * @deprecated Use `.vue({options: {…}})` instead
          *
-         * @type {any}
+         * @type {object}
          */
         vue: {},
 
         /**
          * Merge the given options with the current defaults.
          *
-         * @param {object} options
+         * @param {Partial<MixConfig>} options
          */
         merge(options) {
             Object.keys(options).forEach(key => {
+                // @ts-ignore
                 this[key] = options[key];
             });
         }

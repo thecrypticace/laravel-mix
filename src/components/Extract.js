@@ -4,7 +4,7 @@ let { Chunks } = require('../Chunks');
 
 /** @typedef {import('../../types/extract').Extraction} Extraction */
 /** @typedef {import('../../types/extract').ExtractConfig} ExtractConfig */
-/** @typedef {import('../builder/Entry').Entry} Entry */
+/** @typedef {import('../builder/Entry')} Entry */
 
 class Extract {
     /**
