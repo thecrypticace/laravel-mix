@@ -113,13 +113,6 @@ interface MixConfig {
      **/
     cleanCss: CleanCssConfig;
 
-    /**
-     * Custom Webpack-specific configuration to merge/override Mix's.
-     *
-     * @see mix.webpackConfig()
-     **/
-    webpackConfig?: webpack.Configuration;
-
     /** Custom Babel configuration to be merged with Mix's defaults. */
     babelConfig: BabelConfig;
 
