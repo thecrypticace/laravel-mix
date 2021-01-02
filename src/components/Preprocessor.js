@@ -26,7 +26,7 @@ class Preprocessor {
     /**
      * Assets to append to the webpack entry.
      *
-     * @param {Entry} entry
+     * @param {import('../builder/Entry')} entry
      */
     webpackEntry(entry) {
         this.details.forEach(detail => {
@@ -118,7 +118,7 @@ class Preprocessor {
     /**
      * Generate the options object for the PostCSS Loader.
      *
-     * @param {string} preprocessor
+     * @param {Detail} preprocessor
      */
     postCssLoaderOptions(preprocessor) {
         return {
@@ -206,8 +206,8 @@ class Preprocessor {
      * @internal
      *
      * @param {string} name
-     * @param {Object} src
-     * @param {Object} output
+     * @param {File} src
+     * @param {File} output
      */
     _addChunks(name, src, output) {
         const tests = [

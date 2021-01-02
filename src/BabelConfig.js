@@ -8,6 +8,7 @@ class BabelConfig {
      *
      * @param {Object} mixBabelConfig
      * @param {String} babelRcPath
+     * @returns {babel.TransformOptions}
      */
     static generate(mixBabelConfig, babelRcPath) {
         return merge.all(
@@ -17,8 +18,7 @@ class BabelConfig {
                 mixBabelConfig
             ],
             {
-                arrayMerge: (destinationArray, sourceArray, options) =>
-                    sourceArray
+                arrayMerge: (destinationArray, sourceArray, options) => sourceArray
             }
         );
     }

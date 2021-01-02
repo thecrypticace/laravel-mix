@@ -29,7 +29,7 @@ declare namespace mix {
         setResourceRoot(path: string): Api;
 
         /** Override Mix config options */
-        options(options: MixConfig): Api;
+        options(options: Partial<MixConfig>): Api;
 
         /** Determine if mix is building for production */
         inProduction(): boolean;

@@ -15,13 +15,13 @@ import { AcceptedPlugin } from 'postcss';
 
 interface MixConfig {
     /** Determine if webpack should be triggered in a production environment. */
-    production?: boolean;
+    production: boolean;
 
     /** Determine if we should enable hot reloading. */
-    hmr?: boolean;
+    hmr: boolean;
 
     /** Hostname and port used for the hot reload module */
-    hmrOptions?: {
+    hmrOptions: {
         host: string;
         port: string;
     };
@@ -31,29 +31,31 @@ interface MixConfig {
      *
      * See: https://github.com/postcss/postcss/blob/master/docs/plugins.md
      **/
-    postCss?: AcceptedPlugin[];
+    postCss: AcceptedPlugin[];
 
     /**
      * Determine if we should enable autoprefixer by default.
      * May be set to false to disable it.
      **/
-    autoprefixer?: false | AutoprefixerConfig;
+    autoprefixer: false | AutoprefixerConfig;
 
     /** The public path for the build. */
-    publicPath?: string;
+    publicPath: string;
 
     /**
      * The path for the runtime chunk (`manifest.js`).
      *
      * Defaults to being placed next to compiled JS files.
      **/
-    runtimeChunkPath?: string | null;
+    runtimeChunkPath: string | null;
 
     /** Determine if error notifications should be displayed for each build. */
-    notifications?: {
-        onSuccess?: boolean;
-        onFailure?: boolean;
-    };
+    notifications:
+        | false
+        | {
+              onSuccess?: boolean;
+              onFailure?: boolean;
+          };
 
     /**
      * Determine if sourcemaps should be created for the build.
@@ -63,7 +65,7 @@ interface MixConfig {
     sourcemaps: false | string;
 
     /** The resource root for the build. */
-    resourceRoot?: string;
+    resourceRoot: string;
 
     /**
      * Image Loader defaults.
@@ -87,14 +89,14 @@ interface MixConfig {
      * Determine if CSS relative url()s should be resolved by webpack.
      * Disabling this can improve performance greatly.
      **/
-    processCssUrls?: boolean;
+    processCssUrls: boolean;
 
     /**
      * Terser-specific settings for Webpack.
      *
      * See: https://github.com/webpack-contrib/terser-webpack-plugin#options
      **/
-    terser?: TerserPluginOptions;
+    terser: TerserPluginOptions;
 
     /**
      * cssnano-specific settings for Webpack.
@@ -102,14 +104,14 @@ interface MixConfig {
      *
      * See: https://cssnano.co/optimisations/
      **/
-    cssNano?: false | CssNanoConfig;
+    cssNano: false | CssNanoConfig;
 
     /**
      * CleanCss-specific settings for Webpack.
      *
      * See: https://github.com/jakubpawlowicz/clean-css#constructor-options
      **/
-    cleanCss?: CleanCssConfig;
+    cleanCss: CleanCssConfig;
 
     /**
      * Custom Webpack-specific configuration to merge/override Mix's.
@@ -119,7 +121,7 @@ interface MixConfig {
     webpackConfig?: webpack.Configuration;
 
     /** Custom Babel configuration to be merged with Mix's defaults. */
-    babelConfig?: BabelConfig;
+    babelConfig: BabelConfig;
 
     /**
      * Determine if Mix should ask the friendly errors plugin to
@@ -127,23 +129,23 @@ interface MixConfig {
      *
      * https://github.com/geowarin/friendly-errors-webpack-plugin#options
      **/
-    clearConsole?: boolean;
+    clearConsole: boolean;
 
     /**
      * Enable legacy node -> browser polyfills for things like `process` and `Buffer`.
      */
-    legacyNodePolyfills?: boolean;
+    legacyNodePolyfills: boolean;
 
     /**
      * Options to pass to vue-loader
      *
      * @deprecated Use `.vue({options: {…}})` instead
      **/
-    vue?: any;
+    vue: object;
 
     /** The default Babel configuration. */
-    babel?: (babelRcPath?: string) => BabelConfig;
+    babel: (babelRcPath: string) => BabelConfig;
 
     /** Merge the given options with the current defaults. */
-    merge?: (options: MixConfig) => void;
+    merge: (options: Partial<MixConfig>) => void;
 }

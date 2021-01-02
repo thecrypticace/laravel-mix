@@ -11,6 +11,19 @@ class Vue {
      */
     constructor() {
         this.chunks = Chunks.instance();
+        this.options = {
+            /** @type {VueLoaderOptions|null} */
+            options: null,
+
+            /** @type {string|null} */
+            globalStyles: null,
+
+            /** @type {boolean|string} */
+            extractStyles: false,
+
+            /** @type {boolean} */
+            runtimeOnly: false
+        };
     }
 
     /**
@@ -35,14 +48,7 @@ class Vue {
 
         this.version = VueVersion.detect(options.version);
 
-        this.options = Object.assign(
-            {
-                options: null,
-                globalStyles: null,
-                extractStyles: false
-            },
-            options
-        );
+        this.options = Object.assign(this.options, options);
 
         Mix.globalStyles = this.options.globalStyles;
         Mix.extractingStyles = !!this.options.extractStyles;
