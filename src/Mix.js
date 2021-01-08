@@ -29,7 +29,7 @@ class Mix {
         this.dispatcher = new Dispatcher();
         this.manifest = new Manifest();
         this.paths = new Paths();
-        this.registrar = new ComponentRegistrar();
+        this.registrar = new ComponentRegistrar(this);
         this.webpackConfig = new WebpackConfig(this);
 
         /** @type {Task[]} */

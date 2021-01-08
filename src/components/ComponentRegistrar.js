@@ -42,7 +42,11 @@ let components = [
 ];
 
 class ComponentRegistrar {
-    constructor() {
+    /**
+     * @param {import("../Mix")} mix
+     */
+    constructor(mix) {
+        this.mix = mix;
         this.components = {};
     }
 
@@ -65,7 +69,7 @@ class ComponentRegistrar {
 
         this.registerComponent(component);
 
-        Mix.listen('internal:gather-dependencies', () => {
+        this.mix.listen('internal:gather-dependencies', () => {
             if (!component.activated && !component.passive) {
                 return;
             }
@@ -80,7 +84,7 @@ class ComponentRegistrar {
             );
         });
 
-        Mix.listen('init', () => {
+        this.mix.listen('init', () => {
             if (!component.activated && !component.passive) {
                 return;
             }
@@ -88,21 +92,21 @@ class ComponentRegistrar {
             component.boot && component.boot();
             component.babelConfig && this.applyBabelConfig(component);
 
-            Mix.listen('loading-entry', entry => {
+            this.mix.listen('loading-entry', entry => {
                 if (component.webpackEntry) {
                     component.webpackEntry(entry);
                 }
             });
 
-            Mix.listen('loading-rules', rules => {
+            this.mix.listen('loading-rules', rules => {
                 component.webpackRules && this.applyRules(rules, component);
             });
 
-            Mix.listen('loading-plugins', plugins => {
+            this.mix.listen('loading-plugins', plugins => {
                 component.webpackPlugins && this.applyPlugins(plugins, component);
             });
 
-            Mix.listen('configReady', config => {
+            this.mix.listen('configReady', config => {
                 component.webpackConfig && component.webpackConfig(config);
             });
         });
