@@ -41,12 +41,17 @@ let components = [
     'Before'
 ];
 
+/** @typedef {import("../../types/component").Component} Component */
+/** @typedef {import("../../types/component").ClassComponent} ClassComponent */
+
 class ComponentRegistrar {
     /**
      * @param {import("../Mix")} mix
      */
     constructor(mix) {
         this.mix = mix;
+
+        /** @type {Record<string, Component>} */
         this.components = {};
     }
 
@@ -117,7 +122,7 @@ class ComponentRegistrar {
     /**
      * Register the component.
      *
-     * @param {Object} component
+     * @param {ClassComponent} component
      */
     registerComponent(component) {
         /** @type {string[]} */
@@ -164,7 +169,7 @@ class ComponentRegistrar {
      * Install the component's dependencies.
      *
      * @deprecated
-     * @param {Object} component
+     * @param {ClassComponent} component
      */
     installDependencies(component) {
         []
@@ -179,11 +184,11 @@ class ComponentRegistrar {
      *
      * Apply the Babel configuration for the component.
      *
-     * @param {Object} component
+     * @param {ClassComponent} component
      */
     applyBabelConfig(component) {
-        Config.babelConfig = mergeWebpackConfig(
-            Config.babelConfig,
+        this.mix.config.babelConfig = mergeWebpackConfig(
+            this.mix.config.babelConfig,
             component.babelConfig()
         );
     }
@@ -192,7 +197,8 @@ class ComponentRegistrar {
      *
      * Apply the webpack rules for the component.
      *
-     * @param {Object} component
+     * @param {any[]} rules
+     * @param {ClassComponent} component
      */
     applyRules(rules, component) {
         tap(component.webpackRules(), newRules => {
@@ -204,7 +210,8 @@ class ComponentRegistrar {
      *
      * Apply the webpack plugins for the component.
      *
-     * @param {Object} component
+     * @param {any[]} plugins
+     * @param {ClassComponent} component
      */
     applyPlugins(plugins, component) {
         tap(component.webpackPlugins(), newPlugins => {
