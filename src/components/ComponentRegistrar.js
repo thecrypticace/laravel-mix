@@ -120,41 +120,44 @@ class ComponentRegistrar {
      * @param {Object} component
      */
     registerComponent(component) {
-        []
-            .concat(
-                typeof component.name === 'function'
-                    ? component.name()
-                    : component.constructor.name.replace(/^([A-Z])/, letter =>
-                          letter.toLowerCase()
-                      )
-            )
-            .forEach(name => {
-                this.components[name] = (...args) => {
-                    Mix.components.record(name, component);
+        /** @type {string[]} */
+        const names = [].concat(
+            typeof component.name === 'function'
+                ? component.name()
+                : component.constructor.name.replace(/^([A-Z])/, letter =>
+                      letter.toLowerCase()
+                  )
+        );
 
-                    component.caller = name;
+        names.forEach(name => {
+            this.components[name] = (...args) => {
+                this.mix.components.record(name, component);
 
-                    component.register && component.register(...args);
+                component.caller = name;
 
-                    component.activated = true;
+                component.register && component.register(...args);
 
-                    return this.components;
-                };
+                component.activated = true;
 
-                // If we're dealing with a passive component that doesn't
-                // need to be explicitly triggered by the user, we'll
-                // call it now.
-                if (component.passive) {
-                    this.components[name]();
-                }
+                return this.components;
+            };
 
-                // Components can optionally write to the Mix API directly.
-                if (component.mix) {
-                    Object.keys(component.mix()).forEach(name => {
-                        this.components[name] = component.mix()[name];
-                    });
-                }
-            });
+            // If we're dealing with a passive component that doesn't
+            // need to be explicitly triggered by the user, we'll
+            // call it now.
+            if (component.passive) {
+                this.components[name]();
+            }
+
+            // Components can optionally write to the Mix API directly.
+            if (component.mix) {
+                const api = component.mix();
+
+                Object.keys(api).forEach(name => {
+                    this.components[name] = api[name];
+                });
+            }
+        });
     }
 
     /**
