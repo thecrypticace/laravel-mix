@@ -3,9 +3,10 @@ const argv = require('yargs').argv;
 /** @typedef {import('../types/config').MixConfig} MixConfig */
 
 /**
+ * @param {import("./Mix")} mix
  * @returns {MixConfig}
  **/
-module.exports = function () {
+module.exports = function (mix) {
     return {
         /**
          * Determine if webpack should be triggered in a production environment.
@@ -118,7 +119,7 @@ module.exports = function () {
          * @param {string} babelRcPath
          */
         babel: function (babelRcPath) {
-            babelRcPath = babelRcPath || Mix.paths.root('.babelrc');
+            babelRcPath = babelRcPath || mix.paths.root('.babelrc');
 
             return require('./BabelConfig').generate(this.babelConfig, babelRcPath);
         },

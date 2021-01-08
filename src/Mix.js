@@ -24,7 +24,7 @@ class Mix {
         /** @type {ReturnType<buildConfig>} */
         this.config = buildConfig();
 
-        this.chunks = new Chunks();
+        this.chunks = new Chunks(this);
         this.components = new Components();
         this.dispatcher = new Dispatcher();
         this.manifest = new Manifest();

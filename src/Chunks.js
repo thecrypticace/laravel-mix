@@ -16,7 +16,13 @@ class Chunks {
     /** @type {Chunks|null} */
     static _instance = null;
 
-    constructor() {
+    /**
+     *
+     * @param {import("./Mix")} mix
+     */
+    constructor(mix) {
+        this.mix = mix;
+
         /** @type {{[key: string]: CacheGroup}} */
         this.chunks = {};
 
@@ -114,6 +120,7 @@ class Chunks {
         return item ? item[1] : null;
     }
 
+    /** @returns {import("webpack").Configuration} */
     config() {
         return {
             optimization: {
@@ -131,7 +138,7 @@ class Chunks {
         return {
             runtimeChunk: {
                 name: path
-                    .join(Config.runtimeChunkPath || this.entry.base, 'manifest')
+                    .join(this.mix.config.runtimeChunkPath || this.entry.base, 'manifest')
                     .replace(/\\/g, '/')
             }
         };
