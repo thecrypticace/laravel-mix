@@ -1,4 +1,6 @@
 module.exports = async () => {
+    process.noDeprecation = true;
+
     const mix = require('../src/Mix').primary;
 
     require(mix.paths.mix());
