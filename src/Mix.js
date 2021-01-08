@@ -22,7 +22,7 @@ class Mix {
      */
     constructor() {
         /** @type {ReturnType<buildConfig>} */
-        this.config = buildConfig();
+        this.config = buildConfig(this);
 
         this.chunks = new Chunks(this);
         this.components = new Components();
