@@ -1,6 +1,5 @@
 let path = require('path');
 let Entry = require('./Entry');
-let { Chunks } = require('../Chunks');
 let webpackRules = require('./webpack-rules');
 let webpackPlugins = require('./webpack-plugins');
 let webpackDefaultConfig = require('./webpack-default');
@@ -71,7 +70,7 @@ class WebpackConfig {
             path: path.resolve(Config.publicPath),
             filename: '[name].js',
 
-            chunkFilename: pathData => {
+            chunkFilename: (pathData) => {
                 let hasAbsolutePathChunkName =
                     pathData.chunk.name && pathData.chunk.name.startsWith('/');
 
@@ -130,7 +129,7 @@ class WebpackConfig {
              * @param {{app: import("express").Application}} param0
              */
             onBeforeSetupMiddleware({ app }) {
-                app.use(function(req, _, next) {
+                app.use(function (req, _, next) {
                     // Something causes hot update chunks (except for the JSON payload)
                     // to start with a double slash
                     // e.g. GET http://localhost:8080//js/app.[hash].hot-update.js

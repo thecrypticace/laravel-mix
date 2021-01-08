@@ -167,7 +167,7 @@ class Chunks {
      */
     _checkAllTests(tests) {
         return (module, context) =>
-            tests.every(test => this._checkTest(test, module, context));
+            tests.every((test) => this._checkTest(test, module, context));
     }
 
     /**
@@ -182,7 +182,7 @@ class Chunks {
      */
     _checkAnyTests(tests) {
         return (module, context) =>
-            tests.some(test => this._checkTest(test, module, context));
+            tests.some((test) => this._checkTest(test, module, context));
     }
 
     /**
