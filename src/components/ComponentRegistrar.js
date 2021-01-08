@@ -70,7 +70,8 @@ class ComponentRegistrar {
      * @param {Component} Component
      */
     install(Component) {
-        let component = typeof Component === 'function' ? new Component() : Component;
+        let component =
+            typeof Component === 'function' ? new Component(this.mix) : Component;
 
         this.registerComponent(component);
 

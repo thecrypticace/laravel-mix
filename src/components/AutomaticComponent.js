@@ -1,8 +1,14 @@
-class AutomaticComponent {
+const Component = require('./Component');
+
+class AutomaticComponent extends Component {
     /**
      * Create a new component instance.
+     *
+     * @param {import("../Mix")} mix
      */
-    constructor() {
+    constructor(mix) {
+        super(mix);
+
         this.passive = true;
     }
 }
