@@ -131,7 +131,7 @@ module.exports = function () {
          *
          * See: https://github.com/webpack-contrib/terser-webpack-plugin#options
          *
-         * @type {Object}
+         * @type {import("../types/terser").TerserPluginOptions}
          */
         terser: {
             parallel: true,
