@@ -1,10 +1,13 @@
 let Log = require('../Log');
 let collect = require('collect.js');
+const webpack = require('webpack');
 
 class CustomTasksPlugin {
-    constructor() {
-        /** @type {import("../Mix.js")} */
-        this.mix = global.Mix;
+    /**
+     * @param {import("../Mix.js")} mix
+     */
+    constructor(mix) {
+        this.mix = mix;
     }
 
     /**
@@ -13,23 +16,16 @@ class CustomTasksPlugin {
      * @param {import("webpack").Compiler} compiler
      */
     apply(compiler) {
-        compiler.hooks.done.tapAsync(this.constructor.name, (stats, callback) => {
-            this.runTasks(stats).then(async () => {
-                if (this.mix.components.get('version') && !this.mix.isUsing('hmr')) {
-                    this.applyVersioning();
-                }
+        compiler.hooks.done.tapPromise(this.constructor.name, async stats => {
+            await this.runTasks(stats);
 
-                if (this.mix.inProduction()) {
-                    await this.minifyAssets();
-                }
+            if (this.mix.inProduction()) {
+                await this.minifyAssets();
+            }
 
-                if (this.mix.isWatching()) {
-                    this.mix.tasks.forEach(task => task.watch(this.mix.isPolling()));
-                }
-
-                this.mix.manifest.refresh();
-                callback();
-            });
+            if (this.mix.isWatching()) {
+                this.mix.tasks.forEach(task => task.watch(this.mix.isPolling()));
+            }
         });
     }
 
@@ -61,36 +57,30 @@ class CustomTasksPlugin {
         const path = asset.pathFromPublic();
 
         // Add the asset to the manifest
-        Mix.manifest.add(path);
+        this.mix.manifest.add(path);
 
         // Update the Webpack assets list for better terminal output.
-        stats.compilation.assets[path] = {
-            size: () => asset.size(),
-            emitted: true
-        };
+        stats.compilation.assets[path] = new webpack.sources.SizeOnlySource(asset.size());
     }
 
     /**
      * Execute potentially asynchronous tasks sequentially.
      *
-     * @param stats
-     * @param index
+     * @param {import("webpack").Stats} stats
      */
-    runTasks(stats, index = 0) {
-        if (index === Mix.tasks.length) return Promise.resolve();
-
-        const task = Mix.tasks[index];
-
-        return this.runTask(task, stats).then(() => this.runTasks(stats, index + 1));
+    async runTasks(stats) {
+        for (const task of this.mix.tasks) {
+            await this.runTask(task, stats);
+        }
     }
 
     /**
      * Minify the given asset file.
      */
     async minifyAssets() {
-        const assets = collect(Mix.tasks)
-            .where('constructor.name', '!==', 'VersionFilesTask')
-            .flatMap(({ assets }) => assets);
+        const assets = this.mix.tasks
+            .filter(task => task.constructor.name !== 'VersionFilesTask')
+            .flatMap(task => task.assets);
 
         const tasks = assets.map(async asset => {
             try {
@@ -106,13 +96,6 @@ class CustomTasksPlugin {
         });
 
         await Promise.allSettled(tasks);
-    }
-
-    /**
-     * Version all files that are present in the manifest.
-     */
-    applyVersioning() {
-        collect(Mix.manifest.get()).each((value, key) => Mix.manifest.hash(key));
     }
 }
 

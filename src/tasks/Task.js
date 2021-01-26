@@ -8,6 +8,7 @@ class Task {
      */
     constructor(data) {
         this.data = data;
+        /** @type {import("../File.js")[]} */
         this.assets = [];
         this.isBeingWatched = false;
     }

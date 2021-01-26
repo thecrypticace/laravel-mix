@@ -32,7 +32,7 @@ module.exports = function (mix) {
     plugins.push(new ManifestPlugin(mix));
 
     // Handle all custom, non-webpack tasks.
-    plugins.push(new CustomTasksPlugin());
+    plugins.push(new CustomTasksPlugin(mix));
 
     // Notify the rest of our app when Webpack has finished its build.
     plugins.push(new BuildCallbackPlugin(stats => mix.dispatch('build', stats)));
