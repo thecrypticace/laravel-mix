@@ -14,6 +14,7 @@ class WebpackConfig {
      * @param {import("../Mix")} mix
      */
     constructor(mix) {
+        this.mix = mix;
         this.chunks = mix.chunks;
     }
 
@@ -162,7 +163,9 @@ class WebpackConfig {
      * Build the plugins array.
      */
     async buildPlugins() {
-        this.webpackConfig.plugins = this.webpackConfig.plugins.concat(webpackPlugins());
+        this.webpackConfig.plugins = this.webpackConfig.plugins.concat(
+            webpackPlugins(this.mix)
+        );
 
         await Mix.dispatch('loading-plugins', this.webpackConfig.plugins);
     }
