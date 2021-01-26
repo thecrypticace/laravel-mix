@@ -2,6 +2,11 @@ let Log = require('../Log');
 let collect = require('collect.js');
 
 class CustomTasksPlugin {
+    constructor() {
+        /** @type {import("../Mix.js")} */
+        this.mix = global.Mix;
+    }
+
     /**
      * Apply the plugin.
      *
@@ -10,19 +15,19 @@ class CustomTasksPlugin {
     apply(compiler) {
         compiler.hooks.done.tapAsync(this.constructor.name, (stats, callback) => {
             this.runTasks(stats).then(async () => {
-                if (Mix.components.get('version') && !Mix.isUsing('hmr')) {
+                if (this.mix.components.get('version') && !this.mix.isUsing('hmr')) {
                     this.applyVersioning();
                 }
 
-                if (Mix.inProduction()) {
+                if (this.mix.inProduction()) {
                     await this.minifyAssets();
                 }
 
-                if (Mix.isWatching()) {
-                    Mix.tasks.forEach(task => task.watch(Mix.isPolling()));
+                if (this.mix.isWatching()) {
+                    this.mix.tasks.forEach(task => task.watch(this.mix.isPolling()));
                 }
 
-                Mix.manifest.refresh();
+                this.mix.manifest.refresh();
                 callback();
             });
         });
@@ -31,7 +36,7 @@ class CustomTasksPlugin {
     /**
      * Execute the task.
      *
-     * @param {Task} task
+     * @param {import("../tasks/Task")} task
      * @param {import("webpack").Stats} stats
      */
     async runTask(task, stats) {
