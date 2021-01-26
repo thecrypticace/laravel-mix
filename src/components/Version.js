@@ -1,31 +1,46 @@
 let glob = require('glob');
 let path = require('path');
 let File = require('../File');
-let webpack = require('webpack');
 let VersionFilesTask = require('../tasks/VersionFilesTask');
 
 class Version {
+    constructor() {
+        /** @type {import("../Mix.js")} */
+        this.context = global.Mix;
+    }
+
     /**
      * Register the component.
      *
-     * @param {Array} files
+     * @param {string|string[]} files
      */
     register(files = []) {
-        files = flatten(
-            [].concat(files).map(filePath => {
-                if (File.find(filePath).isDirectory()) {
-                    filePath += path.sep + '**/*';
-                }
+        if (!Array.isArray(files)) {
+            files = [files];
+        }
 
-                if (!filePath.includes('*')) return filePath;
+        files = files.flatMap(filePath => this.getAllRecursively(filePath));
 
-                return glob.sync(new File(filePath).forceFromPublic().relativePath(), {
-                    nodir: true
-                });
-            })
-        );
+        this.context.addTask(new VersionFilesTask({ files }));
+    }
 
-        Mix.addTask(new VersionFilesTask({ files }));
+    /**
+     *
+     * @param {string} filePath
+     * @returns {string[]}
+     */
+    getAllRecursively(filePath) {
+        if (File.find(filePath).isDirectory()) {
+            filePath += path.sep + '**/*';
+        }
+
+        if (!filePath.includes('*')) {
+            return [filePath];
+        }
+
+        return glob.sync(new File(filePath).forceFromPublic().relativePath(), {
+            nodir: true
+        });
     }
 }
 
