@@ -7,16 +7,20 @@ class Manifest {
      * Create a new Manifest instance.
      *
      * @param {string} name
+     * @param {import("./Mix.js")} mix
      */
-    constructor(name = 'mix-manifest.json') {
+    constructor(name = 'mix-manifest.json', mix) {
         this.name = name;
 
         /** @type {Record<string, string>} */
         this.manifest = {};
 
-        /** @type {import("./Mix.js")} */
-        this.mix = global.Mix;
+        this.mix = mix;
         this.config = this.mix.config;
+    }
+
+    toJSON() {
+        return this.manifest;
     }
 
     /**
@@ -34,6 +38,18 @@ class Manifest {
         }
 
         return collect(this.manifest).sortKeys().all();
+    }
+
+    /**
+     * @internal
+     * @param {{path: string, info: import("webpack").AssetInfo}} asset
+     */
+    addAsset(asset) {
+        const path = this.normalizePath(asset.path);
+        const original = path.replace(/\?id=\w{20}/, '');
+        const hash = this.mix.versioning ? `?id=${asset.info.contenthash}` : '';
+
+        this.manifest[original] = `${path}${hash}`;
     }
 
     /**

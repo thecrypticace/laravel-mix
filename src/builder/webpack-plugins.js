@@ -25,7 +25,7 @@ module.exports = function () {
     );
 
     // Handle the creation of the mix-manifest.json file.
-    plugins.push(new ManifestPlugin());
+    plugins.push(new ManifestPlugin(mix));
 
     // Handle all custom, non-webpack tasks.
     plugins.push(new CustomTasksPlugin());

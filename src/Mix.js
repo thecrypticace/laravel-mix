@@ -27,7 +27,7 @@ class Mix {
         this.chunks = new Chunks();
         this.components = new Components();
         this.dispatcher = new Dispatcher();
-        this.manifest = new Manifest();
+        this.manifest = new Manifest('mix-manifest.json', this);
         this.paths = new Paths();
         this.registrar = new ComponentRegistrar();
         this.webpackConfig = new WebpackConfig(this);
@@ -36,6 +36,8 @@ class Mix {
         this.tasks = [];
 
         this.bundlingJavaScript = false;
+
+        this.versioning = false;
 
         /**
          * @internal

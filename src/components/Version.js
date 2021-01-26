@@ -15,6 +15,8 @@ class Version {
      * @param {string|string[]} files
      */
     register(files = []) {
+        this.context.versioning = true;
+
         if (!Array.isArray(files)) {
             files = [files];
         }
