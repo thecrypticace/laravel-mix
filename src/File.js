@@ -44,7 +44,7 @@ class File {
     }
 
     normalizedOutputPath() {
-        let path = this.pathFromPublic(Config.publicPath);
+        let path = this.pathFromPublic(this.mix.config.publicPath);
 
         path = File.stripPublicDir(path);
 
@@ -95,14 +95,14 @@ class File {
      * Get the relative path to the file, from the project root.
      */
     relativePath() {
-        return path.relative(Mix.paths.root(), this.path());
+        return path.relative(this.mix.paths.root(), this.path());
     }
 
     /**
      * Get the relative path to the file, from the project root.
      */
     relativePathWithoutExtension() {
-        return path.relative(Mix.paths.root(), this.pathWithoutExtension());
+        return path.relative(this.mix.paths.root(), this.pathWithoutExtension());
     }
 
     /**
@@ -115,10 +115,10 @@ class File {
     /**
      * Force the file's relative path to begin from the public path.
      *
-     * @param {string|null} publicPath
+     * @param {string|null} [publicPath]
      */
-    forceFromPublic(publicPath) {
-        publicPath = publicPath || Config.publicPath;
+    forceFromPublic(publicPath = null) {
+        publicPath = publicPath || this.mix.config.publicPath;
 
         if (!this.relativePath().startsWith(publicPath)) {
             return new File(path.join(publicPath, this.relativePath()));
@@ -133,7 +133,7 @@ class File {
      * @param {string|null} publicPath
      */
     static stripPublicDir(filePath, publicPath = null) {
-        let publicDir = path.basename(publicPath || Config.publicPath);
+        let publicDir = path.basename(publicPath || this.mix.config.publicPath);
 
         publicDir = escapeRegExp(publicDir);
 
@@ -145,8 +145,8 @@ class File {
      *
      * @param {string|null} publicPath
      */
-    pathFromPublic(publicPath) {
-        publicPath = publicPath || Config.publicPath;
+    pathFromPublic(publicPath = null) {
+        publicPath = publicPath || this.mix.config.publicPath;
 
         let extra = this.filePath.startsWith(publicPath) ? publicPath : '';
 
@@ -159,7 +159,7 @@ class File {
             extra += `\\${path.basename(publicPath)}`;
         }
 
-        return this.path().replace(Mix.paths.root(extra), '');
+        return this.path().replace(this.mix.paths.root(extra), '');
     }
 
     /**
@@ -197,7 +197,7 @@ class File {
     /**
      * Write the given contents to the file.
      *
-     * @param {string} body
+     * @param {string|object} body
      */
     write(body) {
         if (typeof body === 'object') {
@@ -213,6 +213,7 @@ class File {
 
     /**
      * Read the file's contents.
+     * @returns {string}
      */
     read() {
         return fs.readFileSync(this.pathWithoutQueryString(), 'utf8');
@@ -220,6 +221,7 @@ class File {
 
     /**
      * Calculate the proper version hash for the file.
+     * @returns {string}
      */
     version() {
         return md5(this.read()).substr(0, 20);
@@ -250,7 +252,10 @@ class File {
      */
     async minify() {
         if (this.extension() === '.js') {
-            const output = await Terser.minify(this.read(), Config.terser.terserOptions);
+            const output = await Terser.minify(
+                this.read(),
+                this.mix.config.terser.terserOptions
+            );
 
             this.write(output.code);
         }
@@ -312,6 +317,22 @@ class File {
             file: parsed.base,
             base: parsed.dir
         };
+    }
+
+    /**
+     * @internal
+     * @returns {import("./Mix.js")}
+     */
+    static get mix() {
+        // @ts-ignore
+        return global.Mix;
+    }
+
+    /**
+     * @internal
+     */
+    get mix() {
+        return File.mix;
     }
 }
 
