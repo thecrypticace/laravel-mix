@@ -257,11 +257,16 @@ class File {
                 this.mix.config.terser.terserOptions
             );
 
-            this.write(output.code);
+            if (output.code !== undefined) {
+                this.write(output.code);
+            }
         }
 
         if (this.extension() === '.css') {
-            const output = await new UglifyCss(Config.cleanCss).minify(this.read());
+            const output = await new UglifyCss({
+                ...this.mix.config.cleanCss,
+                returnPromise: true
+            }).minify(this.read());
 
             this.write(output.styles);
         }
