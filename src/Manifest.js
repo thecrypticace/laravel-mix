@@ -9,17 +9,26 @@ class Manifest {
      * @param {string} name
      */
     constructor(name = 'mix-manifest.json') {
-        this.manifest = {};
         this.name = name;
+
+        /** @type {Record<string, string>} */
+        this.manifest = {};
+
+        /** @type {import("./Mix.js")} */
+        this.mix = global.Mix;
+        this.config = this.mix.config;
     }
 
     /**
      * Get the underlying manifest collection.
+     *
+     * @deprecated
+     * @param {string|null} [file]
      */
     get(file = null) {
         if (file) {
             return path.posix.join(
-                Config.publicPath,
+                this.config.publicPath,
                 this.manifest[this.normalizePath(file)]
             );
         }
@@ -30,6 +39,7 @@ class Manifest {
     /**
      * Add the given path to the manifest file.
      *
+     * @deprecated
      * @param {string} filePath
      */
     add(filePath) {
@@ -45,10 +55,11 @@ class Manifest {
     /**
      * Add a new hashed key to the manifest.
      *
+     * @deprecated
      * @param {string} file
      */
     hash(file) {
-        let hash = new File(path.join(Config.publicPath, file)).version();
+        let hash = new File(path.join(this.config.publicPath, file)).version();
 
         let filePath = this.normalizePath(file);
 
@@ -60,6 +71,7 @@ class Manifest {
     /**
      * Transform the Webpack stats into the shape we need.
      *
+     * @deprecated
      * @param {object} stats
      */
     transform(stats) {
@@ -70,6 +82,7 @@ class Manifest {
 
     /**
      * Refresh the mix-manifest.js file.
+     * @deprecated
      */
     refresh() {
         File.find(this.path()).makeDirectories().write(this.manifest);
@@ -77,6 +90,7 @@ class Manifest {
 
     /**
      * Retrieve the JSON output from the manifest file.
+     * @deprecated
      */
     read() {
         return JSON.parse(File.find(this.path()).read());
@@ -86,13 +100,14 @@ class Manifest {
      * Get the path to the manifest file.
      */
     path() {
-        return path.join(Config.publicPath, this.name);
+        return path.join(this.config.publicPath, this.name);
     }
 
     /**
      * Flatten the generated stats assets into an array.
      *
-     * @param {Object} stats
+     * @deprecated
+     * @param {any} stats
      */
     flattenAssets(stats) {
         let assets = Object.assign({}, stats.assetsByChunkName);
@@ -117,8 +132,8 @@ class Manifest {
      * @param {string} filePath
      */
     normalizePath(filePath) {
-        if (Config.publicPath && filePath.startsWith(Config.publicPath)) {
-            filePath = filePath.substring(Config.publicPath.length);
+        if (this.config.publicPath && filePath.startsWith(this.config.publicPath)) {
+            filePath = filePath.substring(this.config.publicPath.length);
         }
         filePath = filePath.replace(/\\/g, '/');
 
