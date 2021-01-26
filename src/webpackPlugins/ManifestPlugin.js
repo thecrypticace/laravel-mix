@@ -60,11 +60,15 @@ class ManifestPlugin {
      * @param {webpack.Compilation} compilation
      */
     writeManifest(compilation) {
-        const source = new webpack.sources.RawSource(
-            JSON.stringify(this.manifest, null, 4)
-        );
+        // TODO: Add Config option
+        // TODO: Merge manifest from multiple builds?
+        // TODO: Find a way to still be compatible with laravel-mix-merge-manifest — it will not be needed anymore but we shouldn't break it
+        const current = this.manifest.current();
+        const manifest = current.mergedWith([this.manifest]);
 
-        compilation.assets[this.manifest.path()] = source;
+        const source = new webpack.sources.RawSource(JSON.stringify(manifest, null, 4));
+
+        compilation.assets[manifest.name] = source;
     }
 }
 

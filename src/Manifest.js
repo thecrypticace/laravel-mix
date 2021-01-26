@@ -15,6 +15,7 @@ class Manifest {
         /** @type {Record<string, string>} */
         this.manifest = {};
 
+        // TODO: Eliminate need for this somehow?
         this.mix = mix;
         this.config = this.mix.config;
     }
@@ -107,9 +108,51 @@ class Manifest {
     /**
      * Retrieve the JSON output from the manifest file.
      * @deprecated
+     * @returns {Record<string, string>}
      */
     read() {
         return JSON.parse(File.find(this.path()).read());
+    }
+
+    /**
+     * @internal
+     * @returns {Manifest}
+     */
+    copy() {
+        const manifest = new Manifest(this.name, this.mix);
+        manifest.manifest = { ...this.manifest };
+        return manifest;
+    }
+
+    /**
+     * Retrieve the JSON output from the manifest file.
+     * @internal
+     * @returns {Manifest}
+     */
+    current() {
+        const manifest = this.copy();
+        manifest.manifest = manifest.read();
+
+        return manifest;
+    }
+
+    /**
+     * Retrieve the JSON output from the manifest file.
+     * @internal
+     * @param {Manifest[]} others
+     * @returns {Manifest}
+     */
+    mergedWith(others) {
+        const manifest = this.copy();
+
+        for (const other of others) {
+            manifest.manifest = {
+                ...manifest.manifest,
+                ...other.manifest
+            };
+        }
+
+        return manifest;
     }
 
     /**
