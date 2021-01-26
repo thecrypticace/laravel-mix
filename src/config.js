@@ -136,9 +136,7 @@ module.exports = function () {
         terser: {
             parallel: true,
             terserOptions: {
-                compress: {
-                    warnings: false
-                },
+                compress: true,
                 output: {
                     comments: false
                 }
