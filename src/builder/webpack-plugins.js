@@ -1,3 +1,4 @@
+let webpack = require('webpack');
 let MixDefinitionsPlugin = require('../webpackPlugins/MixDefinitionsPlugin');
 let BuildCallbackPlugin = require('../webpackPlugins/BuildCallbackPlugin');
 let CustomTasksPlugin = require('../webpackPlugins/CustomTasksPlugin');
@@ -43,6 +44,11 @@ module.exports = function (mix) {
             clearConsole: mix.config.clearConsole
         })
     );
+
+    // Enable custom output when the Webpack build completes.
+    if (process.env.DEBUG_PROFILE) {
+        plugins.push(new webpack.debug.ProfilingPlugin());
+    }
 
     return plugins;
 };
