@@ -1,4 +1,40 @@
+/**
+ *
+ * @param {object} param0
+ * @param {string} param0.publicPath
+ * @param {string|null} param0.dir
+ * @param {RegExp|null} param0.replacer
+ * @param {boolean} param0.esModules
+ */
+function configureFileLoader({ publicPath, dir, replacer, esModules }) {
+    return {
+        loader: 'file-loader',
+        options: {
+            esModules,
+
+            name: path => {
+                if (dir === null) {
+                    return `[name].[ext]?[hash]`;
+                }
+
+                if (!/node_modules|bower_components/.test(path)) {
+                    return `${dir}/[name].[ext]?[hash]`;
+                }
+
+                path = path.replace(/\\/g, '/').replace(replacer, '');
+
+                return `${dir}/vendor/${path}?[hash]`;
+            },
+
+            publicPath
+        }
+    };
+}
+
 module.exports = function () {
+    /** @type {ReturnType<import("../config.js")>} */
+    const config = Config;
+
     let rules = [];
 
     // Add support for loading HTML files.
@@ -13,33 +49,16 @@ module.exports = function () {
         // only include svg that doesn't have font in the path or file name by using negative lookahead
         test: /(\.(png|jpe?g|gif|webp)$|^((?!font).)*\.svg$)/,
         use: [
-            {
-                loader: 'file-loader',
-                options: {
-                    name: path => {
-                        if (!/node_modules|bower_components/.test(path)) {
-                            return Config.fileLoaderDirs.images + '/[name].[ext]?[hash]';
-                        }
-
-                        return (
-                            Config.fileLoaderDirs.images +
-                            '/vendor/' +
-                            path
-                                .replace(/\\/g, '/')
-                                .replace(
-                                    /((.*(node_modules|bower_components))|images|image|img|assets)\//g,
-                                    ''
-                                ) +
-                            '?[hash]'
-                        );
-                    },
-                    publicPath: Config.resourceRoot
-                }
-            },
+            configureFileLoader({
+                dir: config.fileLoaderDirs.images,
+                replacer: /((.*(node_modules|bower_components))|images|image|img|assets)\//g,
+                publicPath: config.resourceRoot,
+                esModules: true
+            }),
 
             {
                 loader: 'img-loader',
-                options: Config.imgLoaderOptions
+                options: config.imgLoaderOptions
             }
         ]
     });
@@ -48,29 +67,12 @@ module.exports = function () {
     rules.push({
         test: /(\.(woff2?|ttf|eot|otf)$|font.*\.svg$)/,
         use: [
-            {
-                loader: 'file-loader',
-                options: {
-                    name: path => {
-                        if (!/node_modules|bower_components/.test(path)) {
-                            return Config.fileLoaderDirs.fonts + '/[name].[ext]?[hash]';
-                        }
-
-                        return (
-                            Config.fileLoaderDirs.fonts +
-                            '/vendor/' +
-                            path
-                                .replace(/\\/g, '/')
-                                .replace(
-                                    /((.*(node_modules|bower_components))|fonts|font|assets)\//g,
-                                    ''
-                                ) +
-                            '?[hash]'
-                        );
-                    },
-                    publicPath: Config.resourceRoot
-                }
-            }
+            configureFileLoader({
+                dir: config.fileLoaderDirs.fonts,
+                replacer: /((.*(node_modules|bower_components))|fonts|font|assets)\//g,
+                publicPath: config.resourceRoot,
+                esModules: true
+            })
         ]
     });
 
@@ -78,13 +80,12 @@ module.exports = function () {
     rules.push({
         test: /\.(cur|ani)$/,
         use: [
-            {
-                loader: 'file-loader',
-                options: {
-                    name: '[name].[ext]?[hash]',
-                    publicPath: Config.resourceRoot
-                }
-            }
+            configureFileLoader({
+                dir: null,
+                replacer: null,
+                publicPath: config.resourceRoot,
+                esModules: true
+            })
         ]
     });
 

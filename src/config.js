@@ -100,7 +100,7 @@ module.exports = function () {
         /**
          * File Loader directory defaults.
          *
-         * @type {Object}
+         * @type {{images: string, fonts: string}}
          */
         fileLoaderDirs: {
             images: 'images',
