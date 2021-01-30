@@ -26,10 +26,13 @@ test.after.always(async () => {
 });
 
 test.beforeEach(() => {
+    setupVueAliases(3);
+
     mix.setPublicPath('test/fixtures/integration/dist');
     mix.vue();
     mix.react();
     mix.options({
+        processCssUrls: true,
         fileLoaderOptions: {
             esModules: false
         }
