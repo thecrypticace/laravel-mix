@@ -111,6 +111,10 @@ class Manifest {
      * @returns {Record<string, string>}
      */
     read() {
+        if (!File.exists(this.path())) {
+            return {};
+        }
+
         return JSON.parse(File.find(this.path()).read());
     }
 
@@ -121,6 +125,7 @@ class Manifest {
     copy() {
         const manifest = new Manifest(this.name, this.mix);
         manifest.manifest = { ...this.manifest };
+
         return manifest;
     }
 

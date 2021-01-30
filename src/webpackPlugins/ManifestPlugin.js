@@ -17,21 +17,37 @@ class ManifestPlugin {
      */
     apply(compiler) {
         compiler.hooks.compilation.tap('ManifestPlugin', compilation => {
+            // Force the real content hash plugin to create a hash
+            // I don't understand why this is required but it seems like the
+            // template plugin is what actually kickstarts the hashing process
             compilation.hooks.processAssets.tap(
                 {
                     name: 'ManifestPlugin',
-                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ANALYSE,
-                    additionalAssets: true
+                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE
+                },
+
+                () => {
+                    compilation.assetsInfo.forEach(info => {
+                        info.contenthash = info.contenthash || ['forcehashgeneration'];
+                    });
+                }
+            );
+
+            // Record generated assets into the manifest
+            compilation.hooks.processAssets.tap(
+                {
+                    name: 'ManifestPlugin',
+                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ANALYSE
                 },
 
                 assets => this.recordAssets(compilation, assets)
             );
 
+            // Write the manifest
             compilation.hooks.processAssets.tap(
                 {
                     name: 'ManifestPlugin',
-                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
-                    additionalAssets: true
+                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT
                 },
 
                 () => this.writeManifest(compilation)
