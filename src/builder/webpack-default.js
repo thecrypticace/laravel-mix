@@ -1,6 +1,7 @@
 let path = require('path');
 let TerserPlugin = require('terser-webpack-plugin');
 
+/** @returns {import("webpack").Configuration} */
 module.exports = function () {
     return {
         context: Mix.paths.root(),
@@ -44,6 +45,7 @@ module.exports = function () {
 
         devtool: Config.sourcemaps,
 
+        // @ts-ignore
         devServer: {
             headers: {
                 'Access-Control-Allow-Origin': '*'

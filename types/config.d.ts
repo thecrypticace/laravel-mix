@@ -83,6 +83,11 @@ interface MixConfig {
         fonts?: string;
     };
 
+    /** File Loader options. */
+    fileLoaderOptions?: {
+        esModules?: boolean;
+    };
+
     /**
      * Determine if CSS relative url()s should be resolved by webpack.
      * Disabling this can improve performance greatly.

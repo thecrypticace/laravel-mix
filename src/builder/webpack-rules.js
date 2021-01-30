@@ -53,7 +53,7 @@ module.exports = function () {
                 dir: config.fileLoaderDirs.images,
                 replacer: /((.*(node_modules|bower_components))|images|image|img|assets)\//g,
                 publicPath: config.resourceRoot,
-                esModules: true
+                esModules: config.fileLoaderOptions.esModules
             }),
 
             {
@@ -71,7 +71,7 @@ module.exports = function () {
                 dir: config.fileLoaderDirs.fonts,
                 replacer: /((.*(node_modules|bower_components))|fonts|font|assets)\//g,
                 publicPath: config.resourceRoot,
-                esModules: true
+                esModules: config.fileLoaderOptions.esModules
             })
         ]
     });
@@ -84,7 +84,7 @@ module.exports = function () {
                 dir: null,
                 replacer: null,
                 publicPath: config.resourceRoot,
-                esModules: true
+                esModules: config.fileLoaderOptions.esModules
             })
         ]
     });

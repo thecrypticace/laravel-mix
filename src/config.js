@@ -108,6 +108,15 @@ module.exports = function () {
         },
 
         /**
+         * File Loader directory defaults.
+         *
+         * @type {{esModules: boolean}}
+         */
+        fileLoaderOptions: {
+            esModules: true
+        },
+
+        /**
          * The default Babel configuration.
          *
          * @type {String} babelRcPath
