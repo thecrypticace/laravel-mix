@@ -1,6 +1,6 @@
 <template>
     <div id="asset-module">
-        <img id="asset-img" src=".,/images/laravel.png" />
+        <img id="asset-img" :src="require('../images/laravel.png')" />
     </div>
 </template>
 
