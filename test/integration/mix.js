@@ -29,6 +29,11 @@ test.beforeEach(() => {
     mix.setPublicPath('test/fixtures/integration/dist');
     mix.vue();
     mix.react();
+    mix.options({
+        fileLoaderOptions: {
+            esModules: false
+        }
+    });
 });
 
 test('compiling just js', async t => {
@@ -50,7 +55,8 @@ test('compiling js and css together', async t => {
         'loaded: dynamic.js',
         'run: dynamic.js',
         'style: rgb(255, 119, 0)',
-        'style: rgb(119, 204, 51)'
+        'style: rgb(119, 204, 51)',
+        'asset image size: 200x200'
     ]);
 });
 
