@@ -27,6 +27,10 @@ class ManifestPlugin {
                 },
 
                 () => {
+                    if (!this.mix.versioning) {
+                        return;
+                    }
+
                     compilation.assetsInfo.forEach(info => {
                         info.contenthash = info.contenthash || ['forcehashgeneration'];
                     });
