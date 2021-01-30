@@ -1,4 +1,6 @@
 const webpack = require('webpack');
+const Compilation = webpack.Compilation;
+const RawSource = webpack.sources.RawSource;
 
 class ManifestPlugin {
     /**
@@ -17,13 +19,16 @@ class ManifestPlugin {
      */
     apply(compiler) {
         compiler.hooks.compilation.tap('ManifestPlugin', compilation => {
-            // Force the real content hash plugin to create a hash
-            // I don't understand why this is required but it seems like the
-            // template plugin is what actually kickstarts the hashing process
+            // Trick the real content hash plugin into computing a hash for every asset
+            // The template plugin kickstarts the hashing process but this requires
+            // [contenthash] to be present in the output filename of the asset
+            // So instead we provide a fake hash before optimization which
+            // causes the plugin to calculate a real hash based on the
+            // content of an asset instead of generation entirely
             compilation.hooks.processAssets.tap(
                 {
                     name: 'ManifestPlugin',
-                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE
+                    stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_HASH
                 },
 
                 () => {
@@ -32,7 +37,8 @@ class ManifestPlugin {
                     }
 
                     compilation.assetsInfo.forEach(info => {
-                        info.contenthash = info.contenthash || ['forcehashgeneration'];
+                        info.contenthash =
+                            info.contenthash || 'a_fake_hash_to_cause_generation';
                     });
                 }
             );
@@ -41,17 +47,17 @@ class ManifestPlugin {
             compilation.hooks.processAssets.tap(
                 {
                     name: 'ManifestPlugin',
-                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ANALYSE
+                    stage: Compilation.PROCESS_ASSETS_STAGE_ANALYSE
                 },
 
                 assets => this.recordAssets(compilation, assets)
             );
 
             // Write the manifest
-            compilation.hooks.processAssets.tap(
+            compilation.hooks.processAssets.tapPromise(
                 {
                     name: 'ManifestPlugin',
-                    stage: webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT
+                    stage: Compilation.PROCESS_ASSETS_STAGE_REPORT
                 },
 
                 () => this.writeManifest(compilation)
@@ -79,14 +85,14 @@ class ManifestPlugin {
      *
      * @param {webpack.Compilation} compilation
      */
-    writeManifest(compilation) {
+    async writeManifest(compilation) {
         // TODO: Add Config option
         // TODO: Merge manifest from multiple builds?
         // TODO: Find a way to still be compatible with laravel-mix-merge-manifest — it will not be needed anymore but we shouldn't break it
-        const current = this.manifest.current();
+        const current = await this.manifest.current();
         const manifest = current.mergedWith([this.manifest]);
 
-        const source = new webpack.sources.RawSource(JSON.stringify(manifest, null, 4));
+        const source = new RawSource(JSON.stringify(manifest, null, 4));
 
         compilation.assets[manifest.name] = source;
     }

@@ -132,9 +132,9 @@ class Manifest {
     /**
      * Retrieve the JSON output from the manifest file.
      * @internal
-     * @returns {Manifest}
+     * @returns {Promise<Manifest>}
      */
-    current() {
+    async current() {
         const manifest = this.copy();
         manifest.manifest = manifest.read();
 
