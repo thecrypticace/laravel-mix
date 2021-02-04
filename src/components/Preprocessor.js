@@ -5,14 +5,16 @@ let { Chunks } = require('../Chunks');
 let CssWebpackConfig = require('./CssWebpackConfig');
 let PostCssPluginsFactory = require('../PostCssPluginsFactory');
 
+/** @typedef {import("../builder/Entry.js")} Entry */
+
 /**
  * @typedef {object} Detail
  * @property {string} type
  * @property {File} src
  * @property {File} output
  * @property {any} pluginOptions
- * @property {any[]} postCssPlugins
- * @property {boolean} processUrls
+ * @property {import('postcss').AcceptedPlugin[]} postCssPlugins
+ * @property {boolean} [processUrls]
  */
 
 class Preprocessor {
@@ -20,7 +22,18 @@ class Preprocessor {
      * Create a new component instance.
      */
     constructor() {
-        this.chunks = Chunks.instance();
+        /** @type {Detail[]} */
+        this.details = [];
+    }
+
+    /** @returns {import("../Mix.js")} */
+    get _mix() {
+        // @ts-ignore
+        return Mix;
+    }
+
+    get chunks() {
+        return this._mix.chunks;
     }
 
     /**
@@ -52,11 +65,13 @@ class Preprocessor {
     webpackLoaders(preprocessor) {
         let processUrls = this.shouldProcessUrls(preprocessor);
 
+        /** @type {{loader: string, options?: any}[]} */
         let loaders = [
             ...CssWebpackConfig.afterLoaders({ method: 'extract' }),
             {
                 loader: 'css-loader',
                 options: {
+                    // @ts-ignore
                     url: (url, resourcePath) => {
                         if (url.startsWith('/')) {
                             return false;
@@ -64,7 +79,7 @@ class Preprocessor {
 
                         return processUrls;
                     },
-                    sourceMap: Mix.isUsing('sourcemaps'),
+                    sourceMap: this._mix.isUsing('sourcemaps'),
                     importLoaders: 1
                 }
             },
@@ -111,20 +126,20 @@ class Preprocessor {
             sourceMap:
                 preprocessor.type === 'sass' && processUrls
                     ? true
-                    : Mix.isUsing('sourcemaps')
+                    : this._mix.isUsing('sourcemaps')
         });
     }
 
     /**
      * Generate the options object for the PostCSS Loader.
      *
-     * @param {string} preprocessor
+     * @param {Detail} preprocessor
      */
     postCssLoaderOptions(preprocessor) {
         return {
-            sourceMap: Mix.isUsing('sourcemaps'),
+            sourceMap: this._mix.isUsing('sourcemaps'),
             postcssOptions: {
-                plugins: new PostCssPluginsFactory(preprocessor, Config).load(),
+                plugins: new PostCssPluginsFactory(preprocessor, this._mix.config).load(),
                 hideNothingWarning: true
             }
         };
@@ -137,28 +152,30 @@ class Preprocessor {
      * @param {string} src
      * @param {string} output
      * @param {object} pluginOptions
-     * @param {Array} postCssPlugins
+     * @param {import('postcss').AcceptedPlugin[]} postCssPlugins
      */
     preprocess(type, src, output, pluginOptions = {}, postCssPlugins = []) {
         Assert.preprocessor(type, src, output);
 
-        src = new File(src);
-
-        output = this.normalizeOutput(
+        const srcFile = new File(src);
+        const outputFile = this.normalizeOutput(
             new File(output),
-            src.nameWithoutExtension() + '.css'
+            srcFile.nameWithoutExtension() + '.css'
         );
 
-        /** @type {Detail[]} */
-        this.details = (this.details || []).concat({
+        this.details.push({
             type: this.constructor.name.toLowerCase(),
-            src,
-            output,
+            src: srcFile,
+            output: outputFile,
             pluginOptions,
             postCssPlugins
         });
 
-        this._addChunks(`styles-${output.relativePathWithoutExtension()}`, src, output);
+        this._addChunks(
+            `styles-${outputFile.relativePathWithoutExtension()}`,
+            srcFile,
+            outputFile
+        );
 
         return this;
     }
@@ -172,7 +189,7 @@ class Preprocessor {
         const processUrls =
             preprocessor.pluginOptions.processUrls !== undefined
                 ? preprocessor.pluginOptions.processUrls
-                : Config.processCssUrls;
+                : this._mix.config.processCssUrls;
 
         delete preprocessor.pluginOptions.processUrls;
 
@@ -206,8 +223,8 @@ class Preprocessor {
      * @internal
      *
      * @param {string} name
-     * @param {Object} src
-     * @param {Object} output
+     * @param {File} src
+     * @param {File} output
      */
     _addChunks(name, src, output) {
         const tests = [

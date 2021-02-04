@@ -3,13 +3,14 @@ let postcssrc = require('postcss-load-config');
 class PostCssPluginsFactory {
     /**
      * Create a new instance.
-     * @param {Object} preprocessor
-     * @param {Config} Config
+     * @param {import('./components/Preprocessor').Detail} preprocessor
+     * @param {ReturnType<import("./config.js")>} Config
      */
     constructor(preprocessor, Config) {
         this.preprocessor = preprocessor;
         this.Config = Config;
 
+        /** @type {import('postcss').AcceptedPlugin[]} */
         this.plugins = [];
     }
 
@@ -31,6 +32,7 @@ class PostCssPluginsFactory {
      */
     loadConfigFile() {
         try {
+            // @ts-ignore
             this.plugins = [...this.plugins, ...postcssrc.sync().plugins];
         } catch (e) {
             // No postcss.config.js file exists.
@@ -44,7 +46,7 @@ class PostCssPluginsFactory {
      */
     loadGlobalPlugins() {
         if (this.Config.postCss && this.Config.postCss.length) {
-            this.plugins = [...this.plugins, ...Config.postCss];
+            this.plugins = [...this.plugins, ...this.Config.postCss];
         }
 
         return this;
