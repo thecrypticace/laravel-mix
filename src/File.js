@@ -5,6 +5,7 @@ let fs = require('fs-extra');
 let Terser = require('terser');
 let UglifyCss = require('clean-css');
 const { escapeRegExp } = require('lodash');
+const { getGlobalMix } = require('./MixGlobal');
 
 class File {
     /**
@@ -44,7 +45,7 @@ class File {
     }
 
     normalizedOutputPath() {
-        let path = this.pathFromPublic(Config.publicPath);
+        let path = this.pathFromPublic(this.mix.config.publicPath);
 
         path = File.stripPublicDir(path);
 
@@ -95,14 +96,14 @@ class File {
      * Get the relative path to the file, from the project root.
      */
     relativePath() {
-        return path.relative(Mix.paths.root(), this.path());
+        return path.relative(this.mix.paths.root(), this.path());
     }
 
     /**
      * Get the relative path to the file, from the project root.
      */
     relativePathWithoutExtension() {
-        return path.relative(Mix.paths.root(), this.pathWithoutExtension());
+        return path.relative(this.mix.paths.root(), this.pathWithoutExtension());
     }
 
     /**
@@ -118,7 +119,7 @@ class File {
      * @param {string|null} publicPath
      */
     forceFromPublic(publicPath) {
-        publicPath = publicPath || Config.publicPath;
+        publicPath = publicPath || this.mix.config.publicPath;
 
         if (!this.relativePath().startsWith(publicPath)) {
             return new File(path.join(publicPath, this.relativePath()));
@@ -133,7 +134,7 @@ class File {
      * @param {string|null} publicPath
      */
     static stripPublicDir(filePath, publicPath = null) {
-        let publicDir = path.basename(publicPath || Config.publicPath);
+        let publicDir = path.basename(publicPath || this.mix.config.publicPath);
 
         publicDir = escapeRegExp(publicDir);
 
@@ -146,7 +147,7 @@ class File {
      * @param {string|null} publicPath
      */
     pathFromPublic(publicPath) {
-        publicPath = publicPath || Config.publicPath;
+        publicPath = publicPath || this.mix.config.publicPath;
 
         let extra = this.filePath.startsWith(publicPath) ? publicPath : '';
 
@@ -159,7 +160,7 @@ class File {
             extra += `\\${path.basename(publicPath)}`;
         }
 
-        return this.path().replace(Mix.paths.root(extra), '');
+        return this.path().replace(this.mix.paths.root(extra), '');
     }
 
     /**
@@ -250,13 +251,18 @@ class File {
      */
     async minify() {
         if (this.extension() === '.js') {
-            const output = await Terser.minify(this.read(), Config.terser.terserOptions);
+            const output = await Terser.minify(
+                this.read(),
+                this.mix.config.terser.terserOptions
+            );
 
             this.write(output.code);
         }
 
         if (this.extension() === '.css') {
-            const output = await new UglifyCss(Config.cleanCss).minify(this.read());
+            const output = await new UglifyCss(this.mix.config.cleanCss).minify(
+                this.read()
+            );
 
             this.write(output.styles);
         }
@@ -312,6 +318,15 @@ class File {
             file: parsed.base,
             base: parsed.dir
         };
+    }
+
+    // TODO: Can we refactor this to remove the need for implicit global? Or does this one make sense to leave as is?
+    get mix() {
+        return getGlobalMix({ warn: false });
+    }
+
+    static get mix() {
+        return getGlobalMix({ warn: false });
     }
 }
 

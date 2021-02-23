@@ -1,6 +1,14 @@
 const argv = require('yargs').argv;
+const { getGlobalMix } = require('./MixGlobal');
 
-module.exports = function () {
+/**
+ *
+ * @param {import("./Mix")} mix
+ */
+module.exports = function (mix) {
+    // TODO: Remove in Mix 7 -- Here for backwards compat if a plugin requires this file
+    mix = mix || getGlobalMix();
+
     return {
         /**
          * Determine if webpack should be triggered in a production environment.
@@ -114,7 +122,7 @@ module.exports = function () {
          * @type {String} babelRcPath
          */
         babel: function (babelRcPath) {
-            babelRcPath = babelRcPath || Mix.paths.root('.babelrc');
+            babelRcPath = babelRcPath || mix.paths.root('.babelrc');
 
             return require('./BabelConfig').generate(this.babelConfig, babelRcPath);
         },
