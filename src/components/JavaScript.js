@@ -1,6 +1,7 @@
 let glob = require('glob');
 let File = require('../File');
 let Assert = require('../Assert');
+const { getGlobalMix } = require('../MixGlobal');
 
 class JavaScript {
     constructor() {
@@ -56,6 +57,10 @@ class JavaScript {
      * webpack rules to be appended to the master config.
      */
     webpackRules() {
+        if (this.context.esbuild) {
+            return [];
+        }
+
         return [
             {
                 test: /\.(cjs|mjs|jsx?|tsx?)$/,
@@ -68,6 +73,10 @@ class JavaScript {
                 ]
             }
         ];
+    }
+
+    get context() {
+        return getGlobalMix({ warn: false });
     }
 }
 

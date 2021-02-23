@@ -29,6 +29,10 @@ class TypeScript extends JavaScript {
      * Required dependencies for the component.
      */
     dependencies() {
+        if (this.context.esbuild) {
+            return [];
+        }
+
         return ['ts-loader', 'typescript'].concat();
     }
 
@@ -36,6 +40,10 @@ class TypeScript extends JavaScript {
      * webpack rules to be appended to the master config.
      */
     webpackRules() {
+        if (this.context.esbuild) {
+            return [];
+        }
+
         return [].concat(super.webpackRules(), {
             test: /\.tsx?$/,
             loader: 'ts-loader',

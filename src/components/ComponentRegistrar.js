@@ -21,6 +21,7 @@ let components = [
     'Vue',
     'React',
     'Preact',
+    'ESBuild',
     'Version',
     'Extend',
     'Extract',

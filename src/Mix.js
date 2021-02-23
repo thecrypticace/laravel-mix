@@ -59,6 +59,16 @@ class Mix {
          * @type {boolean|string}
          **/
         this.extractingStyles = false;
+
+        /**
+         * Whether or not to build using ESBuild
+         *
+         * Disables uses of babel-loader and ts-loader
+         *
+         * @internal
+         * @type {boolean}
+         **/
+        this.esbuild = false;
     }
 
     /**
