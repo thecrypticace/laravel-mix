@@ -29,19 +29,37 @@ class Paths {
      * Determine the path to the user's webpack.mix.js file.
      */
     mix() {
+        this._mixFilePath = this._mixFilePath || this.findMixFile();
+
+        return this._mixFilePath;
+    }
+
+    /**
+     * Determine the path to the user's webpack.mix.js file.
+     *
+     * @internal
+     */
+    findMixFile() {
         const path = this.root(
             process.env && process.env.MIX_FILE ? process.env.MIX_FILE : 'webpack.mix'
         );
 
-        try {
-            require.resolve(`${path}.cjs`);
+        /**
+         *
+         * @param {string} path
+         * @returns {string|null}
+         */
+        const find = path => {
+            try {
+                require.resolve(path);
 
-            return `${path}.cjs`;
-        } catch (err) {
-            //
-        }
+                return path;
+            } catch (err) {
+                return null;
+            }
+        };
 
-        return path;
+        return find(`${path}.cjs`) || path;
     }
 
     /**
