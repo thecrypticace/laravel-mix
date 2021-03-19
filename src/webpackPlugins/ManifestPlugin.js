@@ -1,4 +1,15 @@
+const { getGlobalMix } = require('../MixGlobal');
+
 class ManifestPlugin {
+    /**
+     *
+     * @param {import("../Mix")} mix
+     */
+    constructor(mix) {
+        // TODO: Simplify in Mix 7 -- Here for backwards compat if a plugin creates this class directly
+        this.mix = mix || getGlobalMix();
+    }
+
     /**
      * Apply the plugin.
      *
@@ -9,7 +20,7 @@ class ManifestPlugin {
             let stats = curCompiler.getStats().toJson();
 
             // Handle the creation of the mix-manifest.json file.
-            Mix.manifest.transform(stats).refresh();
+            this.mix.manifest.transform(stats).refresh();
 
             callback();
         });

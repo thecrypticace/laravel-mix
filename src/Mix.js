@@ -17,14 +17,17 @@ class Mix {
     /** @type {Mix|null} */
     static _primary = null;
 
+    /** @type {Record<string, boolean>} */
+    static _hasWarned = {};
+
     /**
      * Create a new instance.
      */
     constructor() {
         /** @type {ReturnType<buildConfig>} */
-        this.config = buildConfig();
+        this.config = buildConfig(this);
 
-        this.chunks = new Chunks();
+        this.chunks = new Chunks(this);
         this.components = new Components();
         this.dispatcher = new Dispatcher();
         this.manifest = new Manifest();
@@ -63,6 +66,22 @@ class Mix {
      */
     static get primary() {
         return Mix._primary || (Mix._primary = new Mix());
+    }
+
+    /**
+     * @internal
+     * @deprecated
+     */
+    static get primaryWithWarning() {
+        if (!this._hasWarned.primary && !process.env.NO_MIX_INTERNALS_WARNING) {
+            this._hasWarned.primary = true;
+
+            console.warn(
+                'You are using a mix plugin that relies on implicit global usage of internal files.'
+            );
+        }
+
+        return Mix.primary;
     }
 
     /**

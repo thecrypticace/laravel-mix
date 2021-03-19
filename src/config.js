@@ -1,8 +1,16 @@
 const argv = require('yargs').argv;
+const { getGlobalMix } = require('./MixGlobal');
 
 /** @typedef {import("@babel/core").TransformOptions} BabelConfig */
 
-module.exports = function () {
+/**
+ *
+ * @param {import("./Mix")} mix
+ */
+module.exports = function (mix) {
+    // TODO: Remove in Mix 7 -- Here for backwards compat if a plugin requires this file
+    mix = mix || getGlobalMix();
+
     return {
         /**
          * Determine if webpack should be triggered in a production environment.
