@@ -59,7 +59,7 @@ class Paths {
             }
         };
 
-        return find(`${path}.cjs`) || path;
+        return find(`${path}.mjs`) || find(`${path}.cjs`) || find(`${path}.js`) || path;
     }
 
     /**
