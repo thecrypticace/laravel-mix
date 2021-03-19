@@ -10,7 +10,7 @@ class LegacyNodePolyfills extends AutomaticComponent {
         return [
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer'],
-                process: 'process/browser'
+                process: 'process/browser.js'
             })
         ];
     }
@@ -24,7 +24,7 @@ class LegacyNodePolyfills extends AutomaticComponent {
             resolve: {
                 fallback: {
                     Buffer: 'buffer',
-                    process: 'process/browser'
+                    process: 'process/browser.js'
                 }
             }
         };
