@@ -1,11 +1,11 @@
 import test from 'ava';
-import File from '../../src/File';
+import File from '../../src/File.js';
 import fs from 'fs-extra';
-import assert from '../helpers/assertions';
+import assert from '../helpers/assertions.js';
 
-import webpack from '../helpers/webpack';
+import webpack from '../helpers/webpack.js';
 
-import '../helpers/mix';
+import '../helpers/mix.js';
 
 test('it can version an entire directory or regex of files.', async t => {
     fs.ensureDirSync(`test/fixtures/app/dist/js/folder`);

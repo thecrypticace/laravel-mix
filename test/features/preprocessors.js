@@ -1,11 +1,11 @@
 import test from 'ava';
 import path from 'path';
-import File from '../../src/File';
+import File from '../../src/File.js';
 
-import assert from '../helpers/assertions';
-import webpack from '../helpers/webpack';
+import assert from '../helpers/assertions.js';
+import webpack from '../helpers/webpack.js';
 
-import '../helpers/mix';
+import '../helpers/mix.js';
 
 test('it does not process absolute urls', async t => {
     mix.postCss(`test/fixtures/app/src/css/app.css`, 'css');

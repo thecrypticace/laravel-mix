@@ -1,9 +1,9 @@
 import test from 'ava';
-import assert from '../helpers/assertions';
-import File from '../../src/File';
-import webpack from '../helpers/webpack';
+import assert from '../helpers/assertions.js';
+import File from '../../src/File.js';
+import webpack from '../helpers/webpack.js';
 
-import '../helpers/mix';
+import '../helpers/mix.js';
 
 test('it returns the mix instance', t => {
     t.deepEqual(mix, mix.coffee('resources/assets/js/app.coffee', 'dist/js'));

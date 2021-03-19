@@ -1,7 +1,7 @@
 import test from 'ava';
-import assert from '../helpers/assertions';
-import File from '../../src/File';
-import webpack from '../helpers/webpack';
+import assert from '../helpers/assertions.js';
+import File from '../../src/File.js';
+import webpack from '../helpers/webpack.js';
 
 import '../helpers/mix';
 

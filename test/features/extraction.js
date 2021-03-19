@@ -1,10 +1,10 @@
 import test from 'ava';
-import File from '../../src/File';
+import File from '../../src/File.js';
 
-import webpack from '../helpers/webpack';
+import webpack from '../helpers/webpack.js';
 
-import '../helpers/mix';
-import assert from '../helpers/assertions';
+import '../helpers/mix.js';
+import assert from '../helpers/assertions.js';
 
 test.beforeEach(() => webpack.setupVueAliases(2));
 

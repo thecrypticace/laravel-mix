@@ -1,13 +1,13 @@
 import test from 'ava';
 import path from 'path';
-import File from '../../src/File';
+import File from '../../src/File.js';
 import sinon from 'sinon';
-import ReactComponent from '../../src/components/React';
+import ReactComponent from '../../src/components/React.js';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import { recordBabelConfigs } from '../helpers/babel';
+import { recordBabelConfigs } from '../helpers/babel.js';
 
-import webpack from '../helpers/webpack';
-import '../helpers/mix';
+import webpack from '../helpers/webpack.js';
+import '../helpers/mix.js';
 
 test('mix.react()', t => {
     mix.react().js('src/app.js', 'dist');

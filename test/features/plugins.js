@@ -1,8 +1,6 @@
 import test from 'ava';
-import path from 'path';
-import WebpackConfig from '../../src/builder/WebpackConfig';
 import sinon from 'sinon';
-import webpack, { buildConfig } from '../helpers/webpack';
+import webpack, { buildConfig } from '../helpers/webpack.js';
 
 import '../helpers/mix';
 
