@@ -13,10 +13,11 @@ class VueVersion {
     /**
      * Detect and validate the current version of Vue for the build.
      *
-     * @param {number|null} version
+     * @param {string|number} version
+     * @returns {number}
      */
-    static detect(version) {
-        version = parseInt(version);
+    static detect(version = 0) {
+        version = parseInt(`${version}`);
 
         if (!version) {
             try {
