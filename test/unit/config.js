@@ -1,6 +1,6 @@
-import config from '../../src/config';
+import config from '../../src/config.js';
 import test from 'ava';
-import Mix from '../../src/Mix';
+import Mix from '../../src/Mix.js';
 
 test('that it can merge config', t => {
     let Config = config(new Mix());

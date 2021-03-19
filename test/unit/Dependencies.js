@@ -1,10 +1,10 @@
-import '../../src/helpers';
+import '../../src/helpers.js';
 import test from 'ava';
 import childProcess from 'child_process';
 import sinon from 'sinon';
 import semver from 'semver';
-import Dependencies from '../../src/Dependencies';
-import PackageManager from '../../src/PackageManager';
+import Dependencies from '../../src/Dependencies.js';
+import PackageManager from '../../src/PackageManager.js';
 
 test.beforeEach(() => {
     console.log = () => {};

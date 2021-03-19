@@ -1,4 +1,4 @@
-import File from '../../src/File';
+import File from '../../src/File.js';
 
 export default class Stub {
     constructor(name, contents, basePath = 'test/fixtures/app') {

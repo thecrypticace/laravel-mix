@@ -2,9 +2,9 @@ import test from 'ava';
 import path from 'path';
 import fs from 'fs-extra';
 import eol from 'eol';
-import File from '../../src/File';
+import File from '../../src/File.js';
 
-import '../helpers/mix';
+import '../helpers/mix.js';
 
 let stubsDir = path.resolve(__dirname, 'stubs');
 

@@ -1,8 +1,8 @@
 import test from 'ava';
 import sinon from 'sinon';
-import File from '../../src/File';
+import File from '../../src/File.js';
 
-import '../helpers/mix';
+import '../helpers/mix.js';
 
 test('that it knows if it is being executed in a production environment', t => {
     Config.production = true;

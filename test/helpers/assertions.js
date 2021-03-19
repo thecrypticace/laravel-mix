@@ -1,4 +1,4 @@
-import File from '../../src/File';
+import File from '../../src/File.js';
 
 /**
  * Check that a matching webpack rule can be found

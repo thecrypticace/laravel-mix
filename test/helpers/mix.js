@@ -1,7 +1,7 @@
 import test from 'ava';
-import Mix from '../../src/Mix';
+import Mix from '../../src/Mix.js';
 import fs from 'fs-extra';
-import '../../src/helpers';
+import '../../src/helpers.js';
 
 test.beforeEach(() => {
     let mix = new Mix().boot().api;

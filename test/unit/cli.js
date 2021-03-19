@@ -1,6 +1,6 @@
 import test from 'ava';
 import path from 'path';
-import { cli } from '../helpers/cli';
+import { cli } from '../helpers/cli.js';
 
 const mix = cli({ testing: true });
 
