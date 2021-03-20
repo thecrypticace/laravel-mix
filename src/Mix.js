@@ -10,6 +10,7 @@ let HotReloading = require('./HotReloading');
 let Manifest = require('./Manifest');
 let Paths = require('./Paths');
 let WebpackConfig = require('./builder/WebpackConfig');
+const { wrapGlobal } = require('./MixGlobal');
 
 /** @typedef {import("./tasks/Task")} Task */
 
@@ -266,9 +267,14 @@ class Mix {
     makeCurrent() {
         // Set up some globals
 
-        global.Config = this.config;
-        global.Mix = this;
-        global.webpackConfig = this.webpackConfig;
+        // @ts-ignore
+        global.Config = wrapGlobal(this.config, true);
+
+        // @ts-ignore
+        global.Mix = wrapGlobal(this, true);
+
+        // @ts-ignore
+        global.webpackConfig = wrapGlobal(this.webpackConfig, true);
 
         this.chunks.makeCurrent();
 

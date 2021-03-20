@@ -1,4 +1,5 @@
 let path = require('path');
+const { wrapGlobal } = require('./MixGlobal');
 
 /** @typedef {import("webpack").Module} Module */
 /** @typedef {object} OptimizationSplitChunksCacheGroup */
@@ -41,7 +42,7 @@ class Chunks {
     }
 
     makeCurrent() {
-        Chunks._instance = this;
+        Chunks._instance = wrapGlobal(this, true);
     }
 
     /**

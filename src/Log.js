@@ -43,6 +43,14 @@ class Log {
 
     /**
      *
+     * @param {LogMessage[]} messages
+     */
+    static messages(messages) {
+        messages.forEach(this.message);
+    }
+
+    /**
+     *
      * @param {LogMessage} message
      */
     static message(message) {
