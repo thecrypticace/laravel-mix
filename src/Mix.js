@@ -11,6 +11,7 @@ let Manifest = require('./Manifest');
 let Paths = require('./Paths');
 let WebpackConfig = require('./builder/WebpackConfig');
 const { wrapGlobal } = require('./MixGlobal');
+const Entry = require('./builder/Entry');
 
 /** @typedef {import("./tasks/Task")} Task */
 
@@ -36,6 +37,7 @@ class Mix {
         this.registrar = new ComponentRegistrar(this);
         this.webpackConfig = new WebpackConfig(this);
         this.hot = new HotReloading(this);
+        this.entry = new Entry(this);
 
         /** @type {Task[]} */
         this.tasks = [];

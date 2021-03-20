@@ -1,6 +1,4 @@
 let path = require('path');
-let Entry = require('./Entry');
-let { Chunks } = require('../Chunks');
 let webpackRules = require('./webpack-rules');
 let webpackPlugins = require('./webpack-plugins');
 let webpackDefaultConfig = require('./webpack-default');
@@ -54,7 +52,7 @@ class WebpackConfig {
      * Build the entry object.
      */
     async buildEntry() {
-        let entry = new Entry(this.mix);
+        let entry = this.mix.entry;
 
         if (!this.mix.bundlingJavaScript) {
             entry.addDefault();
