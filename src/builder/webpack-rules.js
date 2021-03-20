@@ -1,4 +1,11 @@
-module.exports = function () {
+/**
+ *
+ * @param {import("../Mix")} mix
+ */
+module.exports = function (mix) {
+    // TODO: Remove in Mix 7 -- Here for backwards compat if a plugin requires this file
+    mix = mix || global.Mix;
+
     let rules = [];
 
     // Add support for loading HTML files.
@@ -18,11 +25,13 @@ module.exports = function () {
                 options: {
                     name: path => {
                         if (!/node_modules|bower_components/.test(path)) {
-                            return Config.fileLoaderDirs.images + '/[name].[ext]?[hash]';
+                            return (
+                                mix.config.fileLoaderDirs.images + '/[name].[ext]?[hash]'
+                            );
                         }
 
                         return (
-                            Config.fileLoaderDirs.images +
+                            mix.config.fileLoaderDirs.images +
                             '/vendor/' +
                             path
                                 .replace(/\\/g, '/')
@@ -33,13 +42,13 @@ module.exports = function () {
                             '?[hash]'
                         );
                     },
-                    publicPath: Config.resourceRoot
+                    publicPath: mix.config.resourceRoot
                 }
             },
 
             {
                 loader: 'img-loader',
-                options: Config.imgLoaderOptions
+                options: mix.config.imgLoaderOptions
             }
         ]
     });
@@ -53,11 +62,13 @@ module.exports = function () {
                 options: {
                     name: path => {
                         if (!/node_modules|bower_components/.test(path)) {
-                            return Config.fileLoaderDirs.fonts + '/[name].[ext]?[hash]';
+                            return (
+                                mix.config.fileLoaderDirs.fonts + '/[name].[ext]?[hash]'
+                            );
                         }
 
                         return (
-                            Config.fileLoaderDirs.fonts +
+                            mix.config.fileLoaderDirs.fonts +
                             '/vendor/' +
                             path
                                 .replace(/\\/g, '/')
@@ -68,7 +79,7 @@ module.exports = function () {
                             '?[hash]'
                         );
                     },
-                    publicPath: Config.resourceRoot
+                    publicPath: mix.config.resourceRoot
                 }
             }
         ]
@@ -82,7 +93,7 @@ module.exports = function () {
                 loader: 'file-loader',
                 options: {
                     name: '[name].[ext]?[hash]',
-                    publicPath: Config.resourceRoot
+                    publicPath: mix.config.resourceRoot
                 }
             }
         ]
