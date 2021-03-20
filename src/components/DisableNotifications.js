@@ -1,5 +1,12 @@
 class DisableNotifications {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * The API name for the component.
      */
     name() {
@@ -11,12 +18,12 @@ class DisableNotifications {
      */
     register() {
         if (this.caller === 'disableSuccessNotifications') {
-            Config.notifications = {
+            this.context.config.notifications = {
                 onSuccess: false,
                 onFailure: true
             };
         } else {
-            Config.notifications = false;
+            this.context.config.notifications = false;
         }
     }
 }

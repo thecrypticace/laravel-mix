@@ -8,9 +8,11 @@ let AppendVueStylesPlugin = require('../webpackPlugins/Css/AppendVueStylesPlugin
 class Vue {
     /**
      * Create a new component instance.
+     * @param {import('../Mix')} context
      */
-    constructor() {
-        this.chunks = Chunks.instance();
+    constructor(context) {
+        this.context = context;
+        this.chunks = context.chunks;
     }
 
     /**
@@ -44,8 +46,8 @@ class Vue {
             options
         );
 
-        Mix.globalStyles = this.options.globalStyles;
-        Mix.extractingStyles = !!this.options.extractStyles;
+        this.context.globalStyles = this.options.globalStyles;
+        this.context.extractingStyles = !!this.options.extractStyles;
     }
 
     /**
@@ -78,7 +80,7 @@ class Vue {
             use: [
                 {
                     loader: 'vue-loader',
-                    options: this.options.options || Config.vue || {}
+                    options: this.options.options || this.context.config.vue || {}
                 }
             ]
         });
@@ -186,7 +188,7 @@ class Vue {
                 ? this.options.extractStyles
                 : '/css/vue-styles.css';
 
-        return fileName.replace(Config.publicPath, '').replace(/^\//, '');
+        return fileName.replace(this.context.config.publicPath, '').replace(/^\//, '');
     }
 }
 

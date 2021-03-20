@@ -3,6 +3,13 @@ let CopyFilesTask = require('../tasks/CopyFilesTask');
 
 class Copy {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * The API name for the component.
      */
     name() {
@@ -16,7 +23,7 @@ class Copy {
      * @param {string} to
      */
     register(from, to) {
-        Mix.addTask(new CopyFilesTask({ from, to: new File(to) }));
+        this.context.addTask(new CopyFilesTask({ from, to: new File(to) }));
     }
 }
 

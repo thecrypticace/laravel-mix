@@ -6,6 +6,13 @@ let VersionFilesTask = require('../tasks/VersionFilesTask');
 
 class Version {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * Register the component.
      *
      * @param {Array} files
@@ -25,7 +32,7 @@ class Version {
             })
         );
 
-        Mix.addTask(new VersionFilesTask({ files }));
+        this.context.addTask(new VersionFilesTask({ files }));
     }
 }
 

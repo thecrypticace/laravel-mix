@@ -6,11 +6,18 @@ let webpack = require('webpack');
 
 class WebpackConfig {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      *
      * @param {((webpack: webpack, config: Configuration) => Configuration)|Configuration} config
      */
     register(config) {
-        global.Mix.api.override(webpackConfig => {
+        this.context.api.override(webpackConfig => {
             config =
                 typeof config == 'function' ? config(webpack, webpackConfig) : config;
 

@@ -114,7 +114,7 @@ class CssWebpackConfig extends AutomaticComponent {
                             return false;
                         }
 
-                        return Config.processCssUrls;
+                        return this.context.config.processCssUrls;
                     },
                     modules: useCssModules
                 }
@@ -123,7 +123,10 @@ class CssWebpackConfig extends AutomaticComponent {
                 loader: 'postcss-loader',
                 options: {
                     postcssOptions: {
-                        plugins: new PostCssPluginsFactory({}, Config).load(),
+                        plugins: new PostCssPluginsFactory(
+                            {},
+                            this.context.config
+                        ).load(),
                         hideNothingWarning: true
                     }
                 }
@@ -142,7 +145,7 @@ class CssWebpackConfig extends AutomaticComponent {
      * @param {string} command
      */
     excludePathsFor(command) {
-        let exclusions = Mix.components.get(command);
+        let exclusions = this.context.components.get(command);
 
         if (command === 'css' || !exclusions) {
             return [];
@@ -178,7 +181,7 @@ class CssWebpackConfig extends AutomaticComponent {
 
         if (method === 'auto') {
             // TODO: Fix
-            if (Mix.extractingStyles !== false) {
+            if (this.context.extractingStyles !== false) {
                 method = 'extract';
             } else {
                 method = 'inline';
@@ -186,7 +189,7 @@ class CssWebpackConfig extends AutomaticComponent {
         }
 
         if (method === 'inline') {
-            if (Mix.components.get('vue') && location === 'default') {
+            if (this.context.components.get('vue') && location === 'default') {
                 loaders.push({ loader: 'vue-style-loader' });
             } else {
                 loaders.push({ loader: 'style-loader' });
@@ -220,9 +223,10 @@ class CssWebpackConfig extends AutomaticComponent {
     static beforeLoaders({ type, injectGlobalStyles }) {
         const loaders = [];
 
-        if (Mix.globalStyles && injectGlobalStyles) {
+        if (this.context.globalStyles && injectGlobalStyles) {
             let resources =
-                CssWebpackConfig.normalizeGlobalStyles(Mix.globalStyles)[type] || [];
+                CssWebpackConfig.normalizeGlobalStyles(this.context.globalStyles)[type] ||
+                [];
 
             if (resources.length) {
                 loaders.push({
@@ -248,8 +252,12 @@ class CssWebpackConfig extends AutomaticComponent {
         }
 
         return mapValues(styles, files => {
-            return Array.wrap(files).map(file => Mix.paths.root(file));
+            return Array.wrap(files).map(file => this.context.paths.root(file));
         });
+    }
+
+    static get context() {
+        return global.Mix;
     }
 }
 

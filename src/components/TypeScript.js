@@ -1,8 +1,13 @@
 let JavaScript = require('./JavaScript');
 
 class TypeScript extends JavaScript {
-    constructor() {
-        super();
+    /**
+     *
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        super(context);
+
         this.options = {};
     }
 

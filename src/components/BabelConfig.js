@@ -1,10 +1,17 @@
 class BabelConfig {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      *
-     * @param {BabelConfig} config
+     * @param {import('@babel/core').TransformOptions} config
      */
     register(config) {
-        Config.babelConfig = config;
+        this.context.config.babelConfig = config;
     }
 }
 

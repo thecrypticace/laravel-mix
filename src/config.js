@@ -82,7 +82,7 @@ module.exports = function (mix) {
         /**
          * Determine if sourcemaps should be created for the build.
          *
-         * @type {Boolean}
+         * @type {boolean|string}
          */
         sourcemaps: false,
 

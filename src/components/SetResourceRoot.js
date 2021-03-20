@@ -1,8 +1,17 @@
 class SetResourceRoot {
-    register(path) {
-        Config.resourceRoot = path;
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
 
-        return this;
+    /**
+     *
+     * @param {string} path
+     */
+    register(path) {
+        this.context.config.resourceRoot = path;
     }
 }
 

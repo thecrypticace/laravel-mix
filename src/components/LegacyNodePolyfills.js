@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 class LegacyNodePolyfills extends AutomaticComponent {
     webpackPlugins() {
-        if (!Config.legacyNodePolyfills) {
+        if (!this.context.config.legacyNodePolyfills) {
             return [];
         }
 
@@ -16,7 +16,7 @@ class LegacyNodePolyfills extends AutomaticComponent {
     }
 
     webpackConfig() {
-        if (!Config.legacyNodePolyfills) {
+        if (!this.context.config.legacyNodePolyfills) {
             return {};
         }
 

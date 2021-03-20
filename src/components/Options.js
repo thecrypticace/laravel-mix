@@ -1,8 +1,15 @@
 const Log = require('../Log');
 
 class Options {
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
     register(options) {
-        Config.merge(options);
+        this.context.config.merge(options);
 
         this.messages(options).forEach(Log.message);
 

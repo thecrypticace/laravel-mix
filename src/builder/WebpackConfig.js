@@ -20,6 +20,7 @@ class WebpackConfig {
 
     /**
      * Build the Webpack configuration object.
+     * @returns {Promise<import('webpack').Configuration>}
      */
     async build() {
         this.webpackConfig = webpackDefaultConfig(this.mix);

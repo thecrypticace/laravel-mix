@@ -1,5 +1,12 @@
 class Then {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * The API name for the component.
      */
     name() {
@@ -7,7 +14,7 @@ class Then {
     }
 
     register(callback) {
-        Mix.listen('build', callback);
+        this.context.listen('build', callback);
 
         return this;
     }

@@ -1,5 +1,12 @@
 class BrowserSync {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * Required dependencies for the component.
      */
     dependencies() {
@@ -47,7 +54,7 @@ class BrowserSync {
             files: [
                 'app/**/*.php',
                 'resources/views/**/*.php',
-                `${Config.publicPath || 'public'}/**/*.(js|css)`
+                `${this.context.config.publicPath || 'public'}/**/*.(js|css)`
             ],
             snippetOptions: {
                 rule: {

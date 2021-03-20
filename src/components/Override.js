@@ -1,8 +1,13 @@
 class Override {
-    register(callback) {
-        Mix.listen('configReadyForUser', callback);
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
 
-        return this;
+    register(callback) {
+        this.context.listen('configReadyForUser', callback);
     }
 }
 

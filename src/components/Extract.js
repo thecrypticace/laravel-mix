@@ -8,15 +8,17 @@ let { Chunks } = require('../Chunks');
 
 class Extract {
     /**
-     * Create a new component instance.
+     * @param {import('../Mix')} context
      */
-    constructor() {
+    constructor(context) {
         /** @type {Entry|null} */
         this.entry = null;
 
         /** @type {Extraction[]} */
         this.extractions = [];
-        this.chunks = Chunks.instance();
+
+        this.context = context;
+        this.chunks = context.chunks;
         this.chunks.runtime = true;
     }
 
@@ -48,7 +50,7 @@ class Extract {
         this.entry = entry;
         this.chunks.entry = entry;
 
-        if (!Mix.bundlingJavaScript) {
+        if (!this.context.bundlingJavaScript) {
             throw new Error('You must compile JS to extract vendor code');
         }
 

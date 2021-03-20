@@ -1,10 +1,19 @@
 let path = require('path');
 
 class SetPublicPath {
-    register(defaultPath) {
-        Config.publicPath = path.normalize(defaultPath.replace(/\/$/, ''));
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
 
-        return this;
+    /**
+     *
+     * @param {string} defaultPath
+     */
+    register(defaultPath) {
+        this.context.config.publicPath = path.normalize(defaultPath.replace(/\/$/, ''));
     }
 }
 

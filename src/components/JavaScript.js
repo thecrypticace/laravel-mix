@@ -3,7 +3,13 @@ let File = require('../File');
 let Assert = require('../Assert');
 
 class JavaScript {
-    constructor() {
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+
+        /** @type {{entry: File[], output: File}[]} */
         this.toCompile = [];
     }
 
@@ -34,7 +40,7 @@ class JavaScript {
 
         this.toCompile.push({ entry, output });
 
-        Mix.bundlingJavaScript = true;
+        this.context.bundlingJavaScript = true;
     }
 
     /**
@@ -63,7 +69,7 @@ class JavaScript {
                 use: [
                     {
                         loader: 'babel-loader',
-                        options: Config.babel()
+                        options: this.context.config.babel()
                     }
                 ]
             }

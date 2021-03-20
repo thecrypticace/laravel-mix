@@ -18,9 +18,11 @@ let PostCssPluginsFactory = require('../PostCssPluginsFactory');
 class Preprocessor {
     /**
      * Create a new component instance.
+     * @param {import('../Mix')} context
      */
-    constructor() {
-        this.chunks = Chunks.instance();
+    constructor(context) {
+        this.context = context;
+        this.chunks = context.chunks;
     }
 
     /**
@@ -64,7 +66,7 @@ class Preprocessor {
 
                         return processUrls;
                     },
-                    sourceMap: Mix.isUsing('sourcemaps'),
+                    sourceMap: this.context.isUsing('sourcemaps'),
                     importLoaders: 1
                 }
             },
@@ -111,7 +113,7 @@ class Preprocessor {
             sourceMap:
                 preprocessor.type === 'sass' && processUrls
                     ? true
-                    : Mix.isUsing('sourcemaps')
+                    : this.context.isUsing('sourcemaps')
         });
     }
 
@@ -122,7 +124,7 @@ class Preprocessor {
      */
     postCssLoaderOptions(preprocessor) {
         return {
-            sourceMap: Mix.isUsing('sourcemaps'),
+            sourceMap: this.context.isUsing('sourcemaps'),
             postcssOptions: {
                 plugins: new PostCssPluginsFactory(preprocessor, Config).load(),
                 hideNothingWarning: true
@@ -172,7 +174,7 @@ class Preprocessor {
         const processUrls =
             preprocessor.pluginOptions.processUrls !== undefined
                 ? preprocessor.pluginOptions.processUrls
-                : Config.processCssUrls;
+                : this.context.config.processCssUrls;
 
         delete preprocessor.pluginOptions.processUrls;
 

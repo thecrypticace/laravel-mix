@@ -7,6 +7,13 @@ let ConcatFilesTask = require('../tasks/ConcatenateFilesTask');
 
 class Combine {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * The API name for the component.
      */
     name() {
@@ -51,7 +58,7 @@ class Combine {
 
         Assert.combine(this.src, this.output);
 
-        Mix.addTask(
+        this.context.addTask(
             new ConcatFilesTask({
                 src: collect(this.glob(this.src))
                     .except(this.output.relativePath())

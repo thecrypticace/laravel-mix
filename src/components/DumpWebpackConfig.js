@@ -2,6 +2,13 @@ let Log = require('../Log');
 
 class DumpWebpackConfig {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * The optional name to be used when called by Mix.
      */
     name() {
@@ -12,7 +19,7 @@ class DumpWebpackConfig {
      * Register the component.
      */
     register() {
-        Mix.listen('configReadyForUser', config => {
+        this.context.listen('configReadyForUser', config => {
             RegExp.prototype.toJSON = function () {
                 return this.toString();
             };

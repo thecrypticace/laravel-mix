@@ -1,4 +1,11 @@
 class SourceMaps {
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
     register(
         generateForProduction = true,
         devType = 'eval-source-map',
@@ -6,11 +13,11 @@ class SourceMaps {
     ) {
         let type = devType;
 
-        if (Mix.inProduction()) {
+        if (this.context.inProduction()) {
             type = generateForProduction ? productionType : false;
         }
 
-        Config.sourcemaps = type;
+        this.context.config.sourcemaps = type;
 
         return this;
     }

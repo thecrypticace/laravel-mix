@@ -1,5 +1,12 @@
 class Extend {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * Register the component.
      *
      * @param {string} name
@@ -9,10 +16,10 @@ class Extend {
         if (typeof component !== 'function') {
             component.name = () => name;
 
-            return Mix.registrar.install(component);
+            return this.context.registrar.install(component);
         }
 
-        Mix.registrar.install({
+        this.context.registrar.install({
             name: () => name,
 
             register(...args) {

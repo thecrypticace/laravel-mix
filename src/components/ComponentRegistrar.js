@@ -42,7 +42,11 @@ let components = [
 ];
 
 class ComponentRegistrar {
-    constructor() {
+    /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
         this.components = {};
     }
 
@@ -61,11 +65,12 @@ class ComponentRegistrar {
      * @param {Component} Component
      */
     install(Component) {
-        let component = typeof Component === 'function' ? new Component() : Component;
+        let component =
+            typeof Component === 'function' ? new Component(this.context) : Component;
 
         this.registerComponent(component);
 
-        Mix.listen('internal:gather-dependencies', () => {
+        this.context.listen('internal:gather-dependencies', () => {
             if (!component.activated && !component.passive) {
                 return;
             }
@@ -80,7 +85,7 @@ class ComponentRegistrar {
             );
         });
 
-        Mix.listen('init', () => {
+        this.context.listen('init', () => {
             if (!component.activated && !component.passive) {
                 return;
             }
@@ -88,21 +93,21 @@ class ComponentRegistrar {
             component.boot && component.boot();
             component.babelConfig && this.applyBabelConfig(component);
 
-            Mix.listen('loading-entry', entry => {
+            this.context.listen('loading-entry', entry => {
                 if (component.webpackEntry) {
                     component.webpackEntry(entry);
                 }
             });
 
-            Mix.listen('loading-rules', rules => {
+            this.context.listen('loading-rules', rules => {
                 component.webpackRules && this.applyRules(rules, component);
             });
 
-            Mix.listen('loading-plugins', plugins => {
+            this.context.listen('loading-plugins', plugins => {
                 component.webpackPlugins && this.applyPlugins(plugins, component);
             });
 
-            Mix.listen('configReady', config => {
+            this.context.listen('configReady', config => {
                 component.webpackConfig && component.webpackConfig(config);
             });
         });
@@ -126,7 +131,7 @@ class ComponentRegistrar {
             )
             .forEach(name => {
                 this.components[name] = (...args) => {
-                    Mix.components.record(name, component);
+                    this.context.components.record(name, component);
 
                     component.caller = name;
 
@@ -175,8 +180,8 @@ class ComponentRegistrar {
      * @param {Object} component
      */
     applyBabelConfig(component) {
-        Config.babelConfig = mergeWebpackConfig(
-            Config.babelConfig,
+        this.context.config.babelConfig = mergeWebpackConfig(
+            this.context.config.babelConfig,
             component.babelConfig()
         );
     }

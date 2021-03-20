@@ -2,6 +2,13 @@ const semver = require('semver');
 
 class React {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * Required dependencies for the component.
      */
     dependencies() {
@@ -70,7 +77,9 @@ class React {
      * Determine if the React version supports fast refreshing.
      */
     supportsFastRefreshing() {
-        return Mix.isHot() && semver.satisfies(this.library().version, '>=16.9.0');
+        return (
+            this.context.isHot() && semver.satisfies(this.library().version, '>=16.9.0')
+        );
     }
 
     /**

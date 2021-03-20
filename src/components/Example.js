@@ -12,6 +12,13 @@
 
 class Example {
     /**
+     * @param {import('../Mix')} context
+     */
+    constructor(context) {
+        this.context = context;
+    }
+
+    /**
      * The optional name to be used when called by Mix.
      * Defaults to the class name, lowercased.
      *
@@ -59,7 +66,7 @@ class Example {
      */
     boot() {
         // Example:
-        // if (Config.options.foo) {}
+        // if (this.context.config.options.foo) {}
     }
 
     /**
